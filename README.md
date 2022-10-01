@@ -53,4 +53,4 @@ const routes: Routes = [
 ];
 ```
 
-5. now you can accesses the signup and signin by adding /sinup and signin to the url
+5. now you can accesses the signup and signin by adding /sinup and /signin to the url
