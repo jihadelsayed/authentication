@@ -1,4 +1,4 @@
-# This is an angular authentication and authorization component:
+# Angular authentication and authorization component:
 ## Files
 * sign in component
 * sign up component
