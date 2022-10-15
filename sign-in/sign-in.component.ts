@@ -72,12 +72,16 @@ export class SignInComponent implements OnInit {
 
       console.log(body)
       localStorage.setItem('UserInfo', JSON.stringify(data.user));
-      if(this.host == undefined) {
 
-        //https://accounts.neetechs.com/ar/#/signin?host=localhost:6880&language=en-US&pathname=%2Fthe_creator
+      try {
         window.location.href = "https://"+ this.host +"/"+this.language.slice(0, 2)+"/#/"+this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
 
-      } else {
+        if(this.host == undefined) {
+
+          //https://accounts.neetechs.com/ar/#/signin?host=localhost:6880&language=en-US&pathname=%2Fthe_creator
+
+        }
+      } catch (error) {
         if (data.user.profile_completed == false) {
           this.router.navigate(['complete']).then(() => {
             location.reload();
@@ -89,9 +93,6 @@ export class SignInComponent implements OnInit {
           });
         }
       }
-
-
-
     }
     ,error => {
       this.isLoginError = true;
