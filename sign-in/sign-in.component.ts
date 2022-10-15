@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { UserInfo } from '../services/user.model';
 //import { MatSnackBar } from '@angular/material/snack-bar';
@@ -23,11 +23,27 @@ export class SignInComponent implements OnInit {
   }
   isLoginError: boolean = false;
   constructor(//private subcategorieService:SubCategoriService,private categoreService:CategoriService,
-    private userService: UserService, private router: Router
+    private userService: UserService, private router: Router,
+    private route: ActivatedRoute
     //,private _snackBar: MatSnackBar
     ) { }
+    host!: string;
+    language!: string;
+    pathname!: string;
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.route.queryParams
+      .subscribe(params => {
+        console.log(params); // { order: "popular" }
+
+        this.host = params['host'];
+        this.language = params['language'];
+        this.pathname = params['pathname'];
+      }
+    );
+    console.log(this.route.queryParams)
+
+  }
 
   OnSubmit(email: any, password: any) {
     this.userService.userAuthentication(email, password).subscribe((data: any) => {
@@ -53,17 +69,29 @@ export class SignInComponent implements OnInit {
         site_id: data.user.site_id,
         profile_completed: data.user.profile_completed,
       }
+
+      console.log(body)
       localStorage.setItem('UserInfo', JSON.stringify(data.user));
-      if (data.user.profile_completed == false) {
-        this.router.navigate(['complete']).then(() => {
-          location.reload();
-        });
+      if(this.host == undefined) {
+
+        //https://accounts.neetechs.com/ar/#/signin?host=localhost:6880&language=en-US&pathname=%2Fthe_creator
+        window.location.href = "https://"+ this.host +"/"+this.language.slice(0, 2)+"/#/"+this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
+
+      } else {
+        if (data.user.profile_completed == false) {
+          this.router.navigate(['complete']).then(() => {
+            location.reload();
+          });
+        }
+        else {
+          this.router.navigate(['/Profile/'+data.user.site_id]).then(() => {
+            location.reload();
+          });
+        }
       }
-      else {
-        this.router.navigate(['/Profile/'+data.user.site_id]).then(() => {
-          location.reload();
-        });
-      }
+
+
+
     }
     ,error => {
       this.isLoginError = true;
