@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { UserInfo } from '../services/user.model';
+import { CookieService } from 'ngx-cookie-service';
 //import { MatSnackBar } from '@angular/material/snack-bar';
 
 
@@ -24,7 +25,8 @@ export class SignInComponent implements OnInit {
   isLoginError: boolean = false;
   constructor(//private subcategorieService:SubCategoriService,private categoreService:CategoriService,
     private userService: UserService, private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cookie: CookieService
     //,private _snackBar: MatSnackBar
     ) { }
     host!: string;
@@ -48,6 +50,7 @@ export class SignInComponent implements OnInit {
   OnSubmit(email: any, password: any) {
     this.userService.userAuthentication(email, password).subscribe((data: any) => {
       localStorage.setItem('userToken', data.token);
+      this.cookie.set('userToken', data.token);
       const body: UserInfo = {
         email: data.user.email,
         first_name: data.user.first_name,
@@ -72,6 +75,7 @@ export class SignInComponent implements OnInit {
 
       console.log(body)
       localStorage.setItem('UserInfo', JSON.stringify(data.user));
+      this.cookie.set('UserInfo', JSON.stringify(data.user));
 
       try {
         window.location.href = "https://"+ this.host +"/"+this.language.slice(0, 2)+"/#/"+this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
