@@ -43,6 +43,14 @@ export class SignInComponent implements OnInit {
         this.pathname = params['pathname'];
       }
     );
+    if (localStorage.getItem('userToken') != null){
+      if (this.host != undefined){
+        // i will send it to ferify token page in the other domain
+        window.location.href = "https://"+ this.host +"/"+this.language.slice(0, 2)+"/#/"+this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
+      }else{
+      }
+    }
+
     console.log(this.route.queryParams)
 
   }
@@ -77,26 +85,24 @@ export class SignInComponent implements OnInit {
       localStorage.setItem('UserInfo', JSON.stringify(data.user));
       this.cookie.set('UserInfo', JSON.stringify(data.user));
 
-      try {
-        window.location.href = "https://"+ this.host +"/"+this.language.slice(0, 2)+"/#/"+this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
-
+      // try {
         if(this.host == undefined) {
-
-          //https://accounts.neetechs.com/ar/#/signin?host=localhost:6880&language=en-US&pathname=%2Fthe_creator
-
+          window.location.href = "https://"+ this.host +"/"+this.language.slice(0, 2)+"/#/"+this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
+          // https://accounts.neetechs.com/ar/#/signin?host=localhost:6880&language=en-US&pathname=%2Fthe_creator
         }
-      } catch (error) {
-        if (data.user.profile_completed == false) {
-          this.router.navigate(['complete']).then(() => {
-            location.reload();
-          });
-        }
-        else {
-          this.router.navigate(['/Profile/'+data.user.site_id]).then(() => {
-            location.reload();
-          });
-        }
-      }
+      // }
+      // catch (error) {
+        // if (data.user.profile_completed == false) {
+        //   this.router.navigate(['complete']).then(() => {
+        //     location.reload();
+        //   });
+        // }
+        // else {
+        //   this.router.navigate(['/Profile/'+data.user.site_id]).then(() => {
+        //     location.reload();
+        //   });
+        // }
+      // }
     }
     ,error => {
       this.isLoginError = true;
