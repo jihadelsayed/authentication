@@ -46,7 +46,7 @@ export class SignInComponent implements OnInit {
     if (localStorage.getItem('userToken') != null){
       if (this.host != undefined){
         // i will send it to ferify token page in the other domain
-        window.location.href = "https://"+ this.host +"/"+this.language.slice(0, 2)+"/#/"+this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
+        window.location.href = "https://"+ this.host +this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
       }else{
       }
     }
@@ -86,9 +86,12 @@ export class SignInComponent implements OnInit {
       this.cookie.set('UserInfo', JSON.stringify(data.user));
 
       // try {
-        if(this.host == undefined) {
-          window.location.href = "https://"+ this.host +"/"+this.language.slice(0, 2)+"/#/"+this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
-          // https://accounts.neetechs.com/ar/#/signin?host=localhost:6880&language=en-US&pathname=%2Fthe_creator
+        if (localStorage.getItem('userToken') != null){
+          if (this.host != undefined){
+            // i will send it to ferify token page in the other domain
+            window.location.href = "https://"+ this.host +this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
+          }else{
+          }
         }
       // }
       // catch (error) {
@@ -132,5 +135,8 @@ export class SignInComponent implements OnInit {
   }
 
   );
+  }
+  changeLanguage(language) {
+    localStorage.setItem('currentLanguage', language);
   }
 }
