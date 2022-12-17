@@ -136,7 +136,7 @@ export class SignInComponent implements OnInit {
 
   );
   }
-  changeLanguage(language) {
+  changeLanguage(language: any) {
     localStorage.setItem('currentLanguage', language);
   }
 }
