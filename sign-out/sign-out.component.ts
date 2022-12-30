@@ -11,6 +11,7 @@ export class SignOutComponent implements OnInit {
 
   ngOnInit(): void {
     localStorage.removeItem('userToken');
+    localStorage.removeItem('UserInfo');
     //this.router.navigate(['/login']);
     location.reload();
   }
