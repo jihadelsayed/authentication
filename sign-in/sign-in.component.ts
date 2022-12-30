@@ -35,7 +35,7 @@ export class SignInComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams
-      .subscribe(params => {
+      .subscribe((params: { [x: string]: string; }) => {
         console.log(params); // { order: "popular" }
 
         this.host = params['host'];

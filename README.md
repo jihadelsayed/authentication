@@ -44,8 +44,8 @@ import { SignUpComponent } from './authentication/sign-up/sign-up.component';
 
 const routes: Routes = [
   // authentication component
-  { path:'signup',component: SignUpComponent,canActivate:[NotAuthGuard] },
-  { path:'signin',component: SignInComponent,canActivate:[NotAuthGuard] },
+  { path:'signUp',component: SignUpComponent,canActivate:[NotAuthGuard] },
+  { path:'signIn',component: SignInComponent,canActivate:[NotAuthGuard] },
 
   // switch from NotAuthGuard to AuthGuard to make the user login before accessing the page
   //  { path:'home',component: AppComponent,canActivate:[AuthGuard] },
