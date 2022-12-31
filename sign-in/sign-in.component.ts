@@ -47,10 +47,10 @@ export class SignInComponent implements OnInit {
         // i will send it to ferify token page in the other domain
         window.location.href = "https://"+ this.host +this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
       }else{
+        console.log(this.route.queryParams)
       }
     }
 
-    console.log(this.route.queryParams)
 
   }
 
