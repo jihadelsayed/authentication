@@ -28,10 +28,11 @@ export class SignInComponent implements OnInit {
     private cookie: CookieService
     //,private _snackBar: MatSnackBar
   ) { }
-  host: any;
+  host: any | null;
   language: any;
   pathname: any;
   port: any | 0;
+  userToken:any = localStorage.getItem('userToken') || null
   ngOnInit() {
     this.route.queryParams
       .subscribe((params: any) => {
@@ -41,8 +42,8 @@ export class SignInComponent implements OnInit {
         this.language = params['language'];
         this.pathname = params['pathname'];
         this.port = params['port'];
-        if (!localStorage.getItem('userToken')) {
-          if (this.host != undefined) {
+        if (this.userToken != null) {
+          if (this.host != null) {
             // i will send it to verify token page in the other domain
             window.location.replace(
               "http://" + this.host || 'neetechs.com'
@@ -96,7 +97,7 @@ export class SignInComponent implements OnInit {
       console.log(body)
       localStorage.setItem('UserInfo', JSON.stringify(data.user));
       this.cookie.set('UserInfo', JSON.stringify(data.user));
-      if (this.host != undefined) {
+      if (this.host != null) {
         // i will send it to verify token page in the other domain
         window.location.replace(
           "http://" + this.host || 'neetechs.com'
