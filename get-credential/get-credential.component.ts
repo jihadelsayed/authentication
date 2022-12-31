@@ -11,6 +11,7 @@ export class GetCredentialComponent implements OnInit {
   language!: string;
   pathname!: string;
   constructor(private route: ActivatedRoute) {}
+  userToken:any = localStorage.getItem('userToken') || null
   ngOnInit() {
     this.route.queryParams
       .subscribe(params => {
@@ -22,13 +23,16 @@ export class GetCredentialComponent implements OnInit {
         this.pathname = params['pathname'];
         if (localStorage.getItem('userToken') != null){
           if (this.host != undefined){
-            window.top!.postMessage({
+            const topWindow:any = window.top;
+
+            topWindow.postMessage({
               type:"credential",
               getToken: localStorage.getItem("userToken"),
               getUserInfo: localStorage.getItem("UserInfo")
             } // get it from url
             , this.host)
             // i will send it to verify token page in the other domain
+
           }else{
           }
         }
