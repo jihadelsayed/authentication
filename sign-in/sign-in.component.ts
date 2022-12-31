@@ -3,7 +3,6 @@ import { FormControl, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
-import { UserInfo } from '../services/user.model';
 import { CookieService } from 'ngx-cookie-service';
 //import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -59,7 +58,7 @@ export class SignInComponent implements OnInit {
     this.userService.userAuthentication(email, password).subscribe((data: any) => {
       localStorage.setItem('userToken', data.token);
       this.cookie.set('userToken', data.token);
-      const body: UserInfo = {
+      const body:any = {
         email: data.user.email,
         first_name: data.user.first_name,
         phone: data.user.phone,

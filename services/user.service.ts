@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { User } from './user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +13,8 @@ export class UserService {
   User: any;
   constructor(private http: HttpClient) { }
 
-  registerUser(user : User){
-    const body: User = {
+  registerUser(user : any){
+    const body: any = {
       username: user.username,
       first_name: user.first_name,
       email: user.email,
@@ -25,7 +24,7 @@ export class UserService {
     return this.http.post(environment.SERVER_URL + 'auth/register/', body);
   }
 
-  userAuthentication(email: any, password: any) {
+  userAuthentication(email: string, password: string) {
     const body = {
       username: " ",
       email: email,

@@ -13,7 +13,6 @@ export class SignOutComponent implements OnInit {
     localStorage.removeItem('userToken');
     localStorage.removeItem('UserInfo');
     //this.router.navigate(['/login']);
-    location.reload();
   }
 
 }

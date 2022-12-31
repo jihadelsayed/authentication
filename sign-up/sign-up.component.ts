@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../services/user.service';
 //import { ToastrService } from 'ngx-toastr';
-import { User } from '../services/user.model';
 
 
 @Component({
@@ -24,7 +23,7 @@ export class SignUpComponent implements OnInit {
   });
 
   hide = true;
-  user : User | undefined;
+  user : any | undefined;
 
   email = new FormControl('', [Validators.required, Validators.email]);
 
