@@ -42,9 +42,9 @@ export class SignInComponent implements OnInit {
         this.pathname = params['pathname'];
       }
     );
-    if (localStorage.getItem('userToken') != null){
+    if (!localStorage.getItem('userToken')){
       if (this.host != undefined){
-        // i will send it to ferify token page in the other domain
+        // i will send it to verify token page in the other domain
         window.location.href = "https://"+ this.host +this.pathname //+"?"+ "host="+ window.location.host+"&"+"language="+ window.navigator.language +"&" + "pathname="+window.location.pathname;
       }else{
         console.log(this.route.queryParams)
