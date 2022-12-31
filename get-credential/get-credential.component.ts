@@ -14,28 +14,30 @@ export class GetCredentialComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams
       .subscribe(params => {
+
         console.log(params); // { order: "popular" }
 
         this.host = params['host'];
         this.language = params['language'];
         this.pathname = params['pathname'];
+        if (localStorage.getItem('userToken') != null){
+          if (this.host != undefined){
+            window.top!.postMessage({
+              type:"credential",
+              getToken: localStorage.getItem("userToken"),
+              getUserInfo: localStorage.getItem("UserInfo")
+            } // get it from url
+            , this.host)
+            // i will send it to verify token page in the other domain
+          }else{
+          }
+        }
+
+        //console.log(this.route.queryParams)
       }
     );
 
-    if (localStorage.getItem('userToken') != null){
-      if (this.host != undefined){
-        window.top!.postMessage({
-          type:"credential",
-          getToken: localStorage.getItem("userToken"),
-          getUserInfo: localStorage.getItem("UserInfo")
-        } // get it from url
-        , this.host)
-        // i will send it to ferify token page in the other domain
-      }else{
-      }
-    }
 
-    console.log(this.route.queryParams)
 
   }
 
