@@ -34,6 +34,9 @@ export class SignInComponent implements OnInit {
   port: any | 0;
   userToken:any = localStorage.getItem('userToken') || null
   ngOnInit() {
+    if (window.location.hostname === "localhost") {
+    console.log("Origin is either localhost or a real domain.");
+    } else {
     this.route.queryParams
       .subscribe((params: any) => {
         console.log(params); // { order: "popular" }
@@ -64,7 +67,7 @@ export class SignInComponent implements OnInit {
       }
       );
 
-
+  }
 
   }
 
