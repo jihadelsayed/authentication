@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-out',
@@ -8,14 +8,14 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class SignOutComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,private router : Router) { }
   host: any
   pathname: any
   language: any
   ngOnInit(): void {
     localStorage.removeItem('userToken');
     localStorage.removeItem('UserInfo');
-    //this.router.navigate(['/login']);
+    this.router.navigate(['/login']);
 
     this.route.queryParams
       .subscribe((params: { [x: string]: string; }) => {
