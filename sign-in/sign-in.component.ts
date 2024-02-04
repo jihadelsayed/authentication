@@ -22,6 +22,8 @@ export class SignInComponent implements OnInit {
     return this.email.hasError('email') ? 'Not a valid email' : '';
   }
   isLoginError: boolean = false;
+  loginErrorMessage: string = "";
+
   constructor(//private subcategorieService:SubCategoriService,private categoreService:CategoriService,
     private userService: UserService, private router: Router,
     private route: ActivatedRoute,
@@ -135,6 +137,8 @@ export class SignInComponent implements OnInit {
         } else {
           msg = error.message
         }
+        this.loginErrorMessage = msg; // Set the specific error message
+
         // this._snackBar.open(
         //   msg
         // , "Ok",
