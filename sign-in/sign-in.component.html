@@ -1,56 +1,54 @@
-
-<form class="bg-white rounded-md shadow-2xl p-5 sm-p-0 " #loginForm="ngForm" (keydown.enter)="OnSubmit(email.value,password.value)" (ngSubmit)="OnSubmit(email.value,password.value)">
-  <div class="p-12 sm-p-0">
-    <img src="assets/logo.png" class="p-1 bg-white border max-w-full h-auto rounded-full" alt="">
+<form #loginForm="ngForm" (ngSubmit)="OnSubmit(email.value, password.value)" (keydown.enter)="OnSubmit(email.value, password.value)" class="login-form">
+  <div class="logo-container">
+    <img src="https://i.imgur.com/3fLGfPn.png" class="logo" alt="Logo">
   </div>
-  <h1 class="text-gray-800 font-bold text-2xl mb-1" i18n="Hello Again!@@message.Hello"
-  >Hello Again!</h1>
-  <p class="text-sm font-normal text-gray-600 mb-8" i18n>Sign in</p>
-  <div class="flex items-center border-2 mb-8 py-2 px-3 rounded-2xl">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+
+  <h1 class="login-title">Hello Again!</h1>
+  <p class="login-subtitle">Sign in</p>
+
+  <!-- Email Input -->
+  <div class="input-group">
+    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
     </svg>
-    <input i18n-placeholder="Email Address" id="email" class=" pl-2 w-full outline-none border-none" type="email" name="email" #email required placeholder="Email Address" />
-            <!-- <mat-error *ngIf="email.oninvalid">{{getErrorMessage()}}</mat-error> -->
-
+    <input type="email"
+           name="email"
+           id="email"
+           required
+           placeholder="Email Address"
+           [(ngModel)]="email.value"
+           #email="ngModel" />
   </div>
-  <div class="flex items-center border-2 mb-12 py-2 px-3 rounded-2xl ">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+
+  <!-- Password Input -->
+  <div class="input-group">
+    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd"
+            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+            clip-rule="evenodd"/>
     </svg>
-    <input i18n-placeholder="password" class="pl-2 w-full outline-none border-none" type="password" name="password" [type]="hide ? 'password' : 'text'" required #password autocomplete="on" id="password" placeholder="Password" />
-<!-- <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-      [attr.aria-pressed]="hide">
-      <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-    </button> -->
+    <input [type]="hide ? 'password' : 'text'"
+           name="password"
+           id="password"
+           required
+           placeholder="Password"
+           [(ngModel)]="password.value"
+           #password="ngModel" />
   </div>
-<!-- Update the error message binding -->
-<div *ngIf="isLoginError" class="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
-  <span class="st-icon-pandora">
-    <i class="material-icons">error</i><p>{{ loginErrorMessage }}</p>
-  </span>
-</div>
 
-  <button  [disabled]="!loginForm.valid" type="submit" class="block w-full bg-indigo-600 mt-5 py-2 rounded-2xl hover:bg-indigo-700 hover:-translate-y-1 transition-all duration-500 text-white font-semibold mb-2" i18n>Login</button>
-  <div class="flex justify-between mt-4">
-    <span class="text-sm ml-2 hover:text-blue-500 cursor-pointer hover:-translate-y-1 duration-500 transition-all">
-      <a href="/resetPassword" i18n>
-        Forgot Password ?
-
-      </a>
-
-    </span>
-    <a href="/signup" class="text-sm ml-2 hover:text-blue-500 cursor-pointer hover:-translate-y-1 duration-500 transition-all" i18n>Don't have an account yet?</a>
+  <!-- Login Error Message -->
+  <div *ngIf="isLoginError" class="login-error">
+    <span><i class="material-icons">error</i></span>
+    <p>{{ loginErrorMessage }}</p>
   </div>
-    <!-- <div class="flex items-center justify-center py-4 text-center bg-gray-50 dark:bg-gray-700">
-  <span class="text-sm text-gray-600 dark:text-gray-200">Don't have an account? </span>
 
-    <a href="signup" class="mx-2 text-sm font-bold text-blue-500 dark:text-blue-400 hover:underline">Register</a>
-  </div> -->
-  <!-- <ion-item button (click)="changeLanguage('ar')" detail="false">
-    <ion-icon color=primary slot="start" name="language-outline"></ion-icon>
-    <ion-label>
-      Arabic
-    </ion-label>
-  </ion-item> -->
+  <!-- Submit Button -->
+  <button [disabled]="!loginForm.valid" type="submit" class="submit-btn">Login</button>
+
+  <!-- Footer Links -->
+  <div class="login-footer">
+    <a routerLink="/resetPassword">Forgot Password?</a>
+    <a routerLink="/signup">Don't have an account yet?</a>
+  </div>
 </form>

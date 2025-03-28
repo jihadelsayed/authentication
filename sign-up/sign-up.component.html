@@ -1,131 +1,75 @@
-<!-- <form fxLayout="column" fxLayoutGap="20px" fxFlex="70" #userRegistrationForm="ngForm" (ngSubmit)=OnSubmit(userRegistrationForm)>
-
-<div class="mat-display-2" fxLayout="row">Gå med</div>
-<a mat-dialog-close>
-  <mat-icon class="iconCancel">cancel</mat-icon>
- </a>
-<mat-form-field appearance="fill">
-    <mat-label>Fullnamn</mat-label>
-    <input matInput placeholder="skriver.." name="first_name" #first_name="ngModel" [(ngModel)]="user.first_name" required>
-    <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-    <mat-hint>exepmel. Mats Eriksson</mat-hint>
-  </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>E-post</mat-label>
-      <input matInput placeholder="example@example.com"  name="email" #email="ngModel" [(ngModel)]="user.email" required>
-      <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-        <mat-label>Välja ett lösenord</mat-label>
-        <input matInput [type]="hide ? 'password' : 'text'" name="password1" #password1="ngModel" [(ngModel)]="user.password1" required>
-        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-        </button>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>repetera lösenord</mat-label>
-        <input matInput [type]="hide ? 'password' : 'text'" name="password2" #password2="ngModel" [(ngModel)]="user.password2" required>
-        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-        </button>
-      </mat-form-field>
-      <a routerLink="">Användarvillkor</a>
-      <a routerLink="">cookiespolicy</a>
-      <mat-checkbox formControlName="serviceForm.boleanControl" class="example-margin">Jag godkänner alla villkor</mat-checkbox>
-
-      <div class="mat-body-2"> Genom att klicka på Gå med godkänner du våra användarvillkor. Läs mer om hur vi samlar in, använder och delar dina data i vår datapolicy och hur vi använder cookies och liknande teknologi i vår cookiespolicy. Du kan komma att få sms-aviseringar från oss och du kan välja bort detta när som helst. </div>
-
-
-      <button mat-raised-button color="primary" type="submit" >Gå med</button>
-
-    </form> -->
-    <section class="bg-white dark:bg-gray-900">
-      <div class="flex justify-center min-h-screen">
-          <div class="hidden bg-cover lg:block lg:w-2/5" style="background-image: url('https://images.unsplash.com/photo-1494621930069-4fd4b2e24a11?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=715&q=80')">
+<section class="form-section">
+    <div class="form-wrapper">
+      <div class="form-image"></div>
+      <div class="form-container">
+        <h1>Get your free account now.</h1>
+        <p>
+          Let’s get you all set up so you can verify your personal account and begin setting up your profile.
+        </p>
+  
+        <div class="account-type">
+          <h2>Select type of account</h2>
+          <div class="account-buttons">
+            <button class="btn-primary" type="button">Client</button>
+            <button class="btn-outline" type="button">Worker</button>
           </div>
-
-          <div class="flex items-center w-full max-w-3xl p-8 mx-auto lg:px-12 lg:w-3/5">
-              <div class="w-full">
-                  <h1 i18n class="text-2xl font-semibold tracking-wider text-gray-800 capitalize dark:text-white">
-                      Get your free account now.
-                  </h1>
-
-                  <p i18n class="mt-4 text-gray-500 dark:text-gray-400">
-                      Let’s get you all set up so you can verify your personal account and begin setting up your profile.
-                  </p>
-
-                  <div class="mt-6">
-                      <h1 i18n class="text-gray-500 dark:text-gray-300">Select type of account</h1>
-
-                      <div class="mt-3 md:flex md:items-center md:-mx-2">
-                          <button class="flex justify-center w-full px-6 py-3 text-white bg-blue-500 rounded-md md:w-auto md:mx-2 focus:outline-none">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                              </svg>
-
-                              <span class="mx-2" i18n>
-                                  client
-                              </span>
-                          </button>
-
-                          <button class="flex justify-center w-full px-6 py-3 mt-4 text-blue-500 border border-blue-500 rounded-md md:mt-0 md:w-auto md:mx-2 dark:border-blue-400 dark:text-blue-400 focus:outline-none">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg>
-
-                              <span class="mx-2" i18n>
-                                  worker
-                              </span>
-                          </button>
-                      </div>
-                  </div>
-
-                  <form class="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2">
-                      <div>
-                          <label i18n class="block mb-2 text-sm text-gray-600 dark:text-gray-200">First Name</label>
-                          <input type="text" i18n-placeholder="input" placeholder="John" class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                      </div>
-
-                      <div>
-                          <label i18n class="block mb-2 text-sm text-gray-600 dark:text-gray-200">Last name</label>
-                          <input type="text" i18n-placeholder="input" placeholder="Snow" class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                      </div>
-
-                      <div>
-                          <label i18n class="block mb-2 text-sm text-gray-600 dark:text-gray-200">Phone number</label>
-                          <input type="text" i18n-placeholder="input" placeholder="XXX-XX-XXXX-XXX" class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                      </div>
-
-                      <div>
-                          <label i18n class="block mb-2 text-sm text-gray-600 dark:text-gray-200">Email address</label>
-                          <input type="email" i18n-placeholder="input" placeholder="johnsnow@example.com" class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                      </div>
-
-                      <div>
-                          <label i18n class="block mb-2 text-sm text-gray-600 dark:text-gray-200">Password</label>
-                          <input type="password" i18n-placeholder="input" placeholder="Enter your password" class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                      </div>
-
-                      <div>
-                          <label i18n class="block mb-2 text-sm text-gray-600 dark:text-gray-200">Confirm password</label>
-                          <input type="password" i18n-placeholder="input" placeholder="Enter your password" class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                      </div>
-
-                      <button
-                          class="flex items-center justify-between w-full px-6 py-3 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
-                          <span i18n>Sign Up </span>
-
-                          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor">
-                              <path fill-rule="evenodd"
-                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                  clip-rule="evenodd" />
-                          </svg>
-                      </button>
-                  </form>
-              </div>
+        </div>
+  
+        <form class="registration-form" #signUpForm="ngForm" (ngSubmit)="OnSubmit(signUpForm)">
+          <div class="form-group">
+            <label>First Name</label>
+            <input 
+              type="text" 
+              name="first_name" 
+              [(ngModel)]="user.first_name" 
+              required 
+              placeholder="John" 
+            />
           </div>
+          <div class="form-group">
+            <label>Username</label>
+            <input 
+              type="text" 
+              name="username" 
+              [(ngModel)]="user.username" 
+              required 
+              placeholder="jsnow" 
+            />
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input 
+              type="email" 
+              name="email" 
+              [(ngModel)]="user.email" 
+              required 
+              placeholder="johnsnow@example.com" 
+            />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input 
+              type="password" 
+              name="password1" 
+              [(ngModel)]="user.password1" 
+              required 
+              placeholder="Enter your password" 
+            />
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input 
+              type="password" 
+              name="password2" 
+              [(ngModel)]="user.password2" 
+              required 
+              placeholder="Confirm your password" 
+            />
+          </div>
+          <button type="submit" class="btn-submit">
+            Sign Up
+          </button>
+        </form>
       </div>
-    </section>
+    </div>
+  </section>

@@ -1,16 +1,26 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, NgForm } from '@angular/forms';
+import { FormGroup, FormsModule, NgForm } from '@angular/forms';
 import {FormControl, Validators} from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../services/user.service';
+import { CommonModule } from '@angular/common';
 //import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.css']
+  styleUrls: ['./sign-up.component.scss'],
+  standalone: true,
+
+  imports: [
+    CommonModule,
+    FormsModule,
+    
+    RouterModule, // Required for ActivatedRoute, Router
+  ],
+
 })
 export class SignUpComponent implements OnInit {
 
@@ -19,7 +29,6 @@ export class SignUpComponent implements OnInit {
     //nameControl : new FormControl('', Validators.required),
     //emailControl : new FormControl('', Validators.required),
     //passwordControl : new FormControl('', Validators.required),
-
   });
 
   hide = true;

@@ -1,42 +1,59 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../services/user.service';
-import { CookieService } from 'ngx-cookie-service';
+import { Component, OnInit } from "@angular/core";
+import { FormControl, FormsModule, Validators } from "@angular/forms";
+import { ActivatedRoute, Router, RouterModule } from "@angular/router";
+import { UserService } from "../services/user.service";
+import { CookieService } from "ngx-cookie-service";
+import { CommonModule } from "@angular/common";
 //import { MatSnackBar } from '@angular/material/snack-bar';
-
+import { Inject, PLATFORM_ID } from "@angular/core";
+import { isPlatformBrowser } from "@angular/common";
 
 @Component({
   selector: 'app-sign-in',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    
+    RouterModule, // Required for ActivatedRoute, Router
+  ],
+  providers: [
+    CookieService,
+  ],
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.css']
+  styleUrls: ['./sign-in.component.scss'],
 })
 export class SignInComponent implements OnInit {
   hide = true;
-  email = new FormControl('', [Validators.required, Validators.email]);
+  email = new FormControl("", [Validators.required, Validators.email]);
   getErrorMessage() {
-    if (this.email.hasError('required')) {
-      return 'you must write the e-post';
+    if (this.email.hasError("required")) {
+      return "you must write the e-post";
     }
-    return this.email.hasError('email') ? 'Not a valid email' : '';
+    return this.email.hasError("email") ? "Not a valid email" : "";
   }
   isLoginError: boolean = false;
   loginErrorMessage: string = "";
 
-  constructor(//private subcategorieService:SubCategoriService,private categoreService:CategoriService,
-    private userService: UserService, private router: Router,
+  constructor(
+    //private subcategorieService:SubCategoriService,private categoreService:CategoriService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+
+    private userService: UserService,
+    private router: Router,
     private route: ActivatedRoute,
     private cookie: CookieService
-    //,private _snackBar: MatSnackBar
-  ) { }
+  ) //,private _snackBar: MatSnackBar
+  {}
   host: any | null;
   language: any;
   pathname: any;
   port: any | 0;
-  userToken:any = localStorage.getItem('userToken') || null
+  userToken: any = null;
   ngOnInit() {
-    if (window.location.hostname === "localhost") {
+    if (isPlatformBrowser(this.platformId)) {
+      this.userToken = localStorage.getItem('userToken') || null;
+  
     console.log("Origin is either localhost or a real domain.");
     } else {
     this.route.queryParams
