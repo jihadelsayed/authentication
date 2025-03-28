@@ -48,7 +48,21 @@ export class SignUpComponent implements OnInit {
     //,private _snackBar: MatSnackBar
     ) { }
 
-  ngOnInit(): void {
+    host: string | null = null;
+    port: string | null = null;
+    pathname: string | null = null;
+    language: string | null = null;
+    
+    ngOnInit(): void {
+      this.resetForm();
+    
+      this.route.queryParams.subscribe((params: any) => {
+        this.host = params['host'] ?? null;
+        this.port = params['port'] ?? '443';
+        this.pathname = params['pathname'] ?? '';
+        this.language = params['language'] ?? 'en';
+      });
+    
     this.resetForm();
   }
   resetForm(form? : NgForm)
@@ -66,6 +80,7 @@ export class SignUpComponent implements OnInit {
    }
 
    OnSubmit(form : NgForm){
+    
       this.userService.registerUser(form.value).subscribe((data:any) =>{
         if (data.Succeeded = true)
         {
@@ -78,18 +93,29 @@ export class SignUpComponent implements OnInit {
           //   panelClass: 'warning',
           // });
 
-          console.log(data)
-          this.resetForm(form);
-          // this.toaster.success('User registeration successful')
+          // console.log(data)
+          // this.resetForm(form);
+          // // this.toaster.success('User registeration successful')
 
+          // localStorage.setItem('UserInfo', JSON.stringify(data.user));
+          // localStorage.setItem('userToken',data.token);
+          // this.router.navigate(['complete']).then(() => {
+          //   location.reload();
+          //   //window.location.reload();
+          // });
+
+          // this.router.navigate(['/complete']);
           localStorage.setItem('UserInfo', JSON.stringify(data.user));
-          localStorage.setItem('userToken',data.token);
-          this.router.navigate(['complete']).then(() => {
-            location.reload();
-            //window.location.reload();
-          });
-
-          this.router.navigate(['/complete']);
+          localStorage.setItem('userToken', data.token);
+  
+          const redirectHost = this.host ?? 'neetechs.com';
+          const redirectPort = this.port ?? '443';
+          const redirectLang = (this.language ?? 'en').slice(0, 2);
+          const redirectPath = this.pathname ?? '';
+  
+          const finalRedirect = `https://${redirectHost}:${redirectPort}/#/${redirectLang}/${redirectPath}`;
+  
+          window.location.href = finalRedirect;
         }
         else
         {
