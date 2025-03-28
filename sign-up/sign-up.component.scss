@@ -1,59 +1,95 @@
 @use '../../../styles._variables.scss' as *;
-body {
-  margin: 0;
-  font-family: sans-serif;
-  background-color: $neutral-color-light;
-}
-
-.form-section {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .form-wrapper {
   display: flex;
-  max-width: 1200px;
-  width: 100%;
-  background-color: $neutral-color-light;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff;
 }
 
 .form-image {
   display: none;
-  width: 40%;
+  width: 100%;
+  height: 200px;
   background-image: url('https://images.unsplash.com/photo-1494621930069-4fd4b2e24a11');
   background-size: cover;
   background-position: center;
 }
 
 @media (min-width: 1024px) {
+  .form-wrapper {
+    flex-direction: row;
+  }
   .form-image {
     display: block;
+    width: 40%;
+    height: auto;
   }
 }
 
 .form-container {
   padding: 2rem;
   width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .form-container h1 {
   font-size: 1.75rem;
-  margin-bottom: 1rem;
-  color: $font-color-h1;
+  margin-bottom: 0.5rem;
+  color: #121110;
 }
 
 .form-container p {
-  color: $font-color-muted;
+  color: #BAB4B0;
   margin-bottom: 2rem;
+}
+
+.registration-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .registration-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  color: #4B4846;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border: 1px solid #BAB4B0;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+}
+
+.form-check {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+  grid-column: span 2;
+  margin-top: 1rem;
+}
+
+.form-check label {
+  color: #4B4846;
 }
 
 .account-type h2 {
   font-size: 1rem;
-  color: $font-color-muted;
-  margin-bottom: 1rem;
+  color: #BAB4B0;
+  margin-bottom: 0.5rem;
 }
 
 .account-buttons {
@@ -72,51 +108,21 @@ body {
 }
 
 .btn-primary {
-  background-color: $primary-color;
-  color: $font-color-primary;
+  background-color: #FBD5BD;
+  color: #121110;
 }
 
 .btn-outline {
-  border: 2px solid $primary-color;
+  border: 2px solid #FBD5BD;
   background-color: transparent;
-  color: $primary-color;
-}
-
-.registration-form {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-@media (min-width: 768px) {
-  .registration-form {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  margin-bottom: 0.5rem;
-  color: $font-color-secondary;
-}
-
-.form-group input {
-  padding: 0.75rem;
-  border: 1px solid $neutral-color-medium-light;
-  border-radius: 0.375rem;
-  font-size: 1rem;
+  color: #FBD5BD;
 }
 
 .btn-submit {
   grid-column: span 2;
   padding: 0.75rem;
-  background-color: $primary-color;
-  color: $font-color-primary;
+  background-color: #FBD5BD;
+  color: #121110;
   border: none;
   border-radius: 0.5rem;
   font-weight: bold;
@@ -125,5 +131,11 @@ body {
 }
 
 .btn-submit:hover {
-  background-color: $secondary-color;
+  background-color: #F8A242;
+}
+
+.error {
+  font-size: 0.875rem;
+  color: #C4221A;
+  margin-top: 0.25rem;
 }
