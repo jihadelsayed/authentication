@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -10,9 +11,13 @@ export class GetCredentialComponent implements OnInit {
   host!: string;
   language!: string;
   pathname!: string;
-  constructor(private route: ActivatedRoute) {}
-  userToken:any = localStorage.getItem('userToken') || null
+  constructor(private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object,
+
+  ) {}
+  userToken: any = null;
   ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
     this.route.queryParams
       .subscribe(params => {
 
@@ -44,6 +49,7 @@ export class GetCredentialComponent implements OnInit {
 
 
   }
+}
 
 
 
