@@ -26,12 +26,17 @@ export class SignUpComponent implements OnInit {
     smsConsent: false,
     account_type: ''
   };
+  phoneTouched: boolean = false;
 
   host: string | null = null;
   port: string | null = null;
   pathname: string | null = null;
   language: string | null = null;
-
+  showReferral: boolean = false;
+  useEmail: boolean = false;
+  showPassword: boolean = false;
+  loading: boolean = false;
+  
   constructor(
     private userService: UserService,
     private router: Router,
@@ -50,7 +55,7 @@ export class SignUpComponent implements OnInit {
 
   resetForm(form?: NgForm) {
     if (form) form.reset();
-
+  
     this.user = {
       first_name: '',
       username: '',
@@ -61,37 +66,75 @@ export class SignUpComponent implements OnInit {
       smsConsent: false,
       account_type: ''
     };
+  
+    this.useEmail = false;
+    this.showPassword = false;
+    this.loading = false;
+  }
+  step: number = 1;
+
+  nextStep() {
+    if (this.step < 3) this.step++;
   }
 
+  prevStep() {
+    if (this.step > 1) this.step--;
+  }
+
+  stepLoading: boolean = false;
+
+  nextStepWithSpinner() {
+    this.stepLoading = true;
+    setTimeout(() => {
+      this.step++;
+      this.stepLoading = false;
+    }, 400); // 400ms fake delay for spinner
+  }
+  
+  prevStepWithSpinner() {
+    this.stepLoading = true;
+    setTimeout(() => {
+      this.step--;
+      this.stepLoading = false;
+    }, 400);
+  }
+  
   OnSubmit(form: NgForm) {
     if (this.user.password1 !== this.user.password2) {
-      // You could add a toast or message for "Passwords do not match"
+      // Show a toast or inline error if needed
+      console.error('Passwords do not match.');
       return;
     }
-
+  
     if (!this.user.smsConsent || !this.user.account_type) {
-      // Handle checkbox/account_type error if not already displayed
+      console.error('Missing required fields.');
       return;
     }
-
+  
+    this.loading = true;
+  
     this.userService.registerUser(form.value).subscribe(
       (data: any) => {
+        this.loading = false;
+  
         if (data.Succeeded === true) {
           localStorage.setItem('UserInfo', JSON.stringify(data.user));
           localStorage.setItem('userToken', data.token);
-
+  
           const redirectHost = this.host ?? 'neetechs.com';
           const redirectPort = this.port ?? '443';
           const redirectLang = (this.language ?? 'en').slice(0, 2);
           const redirectPath = this.pathname ?? '';
-
           const finalRedirect = `https://${redirectHost}:${redirectPort}/#/${redirectLang}/${redirectPath}`;
+  
           window.location.href = finalRedirect;
         } else {
-          // Handle failed registration (e.g., show a toast)
+          console.error('Registration failed:', data);
         }
       },
       (error) => {
+        this.loading = false;
+  
         let msg: any = 'Unknown error';
         if (error.status === 400) {
           if (error.error['email']) msg = error.error['email'];
@@ -106,4 +149,5 @@ export class SignUpComponent implements OnInit {
       }
     );
   }
+  
 }
