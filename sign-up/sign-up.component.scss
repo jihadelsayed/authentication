@@ -10,13 +10,17 @@
 }
 
 .signup-layout {
+
   max-width: 853px;
   width: 100%;
   min-height: 70vh;
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  p{
+    overflow-y: hidden;
 
+  }
   .signup-top {
     display: flex;
     background: $primary-color;
@@ -45,6 +49,7 @@
     }
 
     h2 {
+      
       font-size: 2.2rem;
       font-weight: bold;
       margin-bottom: 1rem;
@@ -194,7 +199,7 @@
     //display: flex;
     align-items: flex-start;
     gap: 0.5rem;
-
+    cursor: pointer;
     input[type="checkbox"] {
       margin-top: 3px;
     }
@@ -227,7 +232,7 @@
     &:hover {
       background-color: color.adjust($tertiary-color, $lightness: -5%);
       transform: scale(1.01); // subtle lift effect
-      
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
     &:disabled {
       background: $neutral-color-medium-light;
@@ -282,6 +287,8 @@
 
       &:hover {
         background: $neutral-color-light;
+        transform: scale(1.01); // subtle lift effect
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       }
 
       &.google::before {
@@ -379,4 +386,52 @@ input:focus {
 .step-spinner img {
   width: 40px;
   height: 40px;
+}
+
+
+// progress bar
+.progress-bar-wrapper {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: #e0e0e0;
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #f7931a; // Neetechs brand color
+  width: 0;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  font-size: 0.875rem;
+  text-align: right;
+  margin-top: 0.25rem;
+  color: #555;
+}
+
+// phone 
+.phone-group {
+  display: flex;
+  gap: 0.5rem;
+
+  select {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid $neutral-color-medium-light;
+    background: white;
+    color: $font-color-primary;
+  }
+
+  input {
+    flex: 1;
+  }
 }

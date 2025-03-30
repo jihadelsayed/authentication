@@ -7,7 +7,13 @@
       <h2 class="step-indicator">Create your Neetechs account</h2>
       <p class="login-link">Already have an account? <a routerLink="/login">Log In</a></p>
 
-      <p class="step-indicator">Step {{step}} of 3</p>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="step * 33.33"></div>
+        </div>
+        <p class="progress-text">Step {{ step }} of 3</p>
+      </div>
+
     </div>
   
     <!-- Right Panel (Form) -->
@@ -45,20 +51,31 @@
       </div>
   
       <ng-template #phoneBlock>
-        <input
-        type="tel"
-        name="phone"
-        [(ngModel)]="user.phone"
-        required
-        #phoneRef="ngModel"
-        [class.invalid]="phoneRef.invalid && phoneRef.touched"
-        (blur)="phoneTouched = true" />
+        <div class="phone-group">
+          <select [(ngModel)]="selectedCountry" name="country" required>
+            <option *ngFor="let c of countries" [value]="c.code">
+              {{ c.flag }} +{{ c.dialCode }}
+            </option>
+          </select>
       
-      <div *ngIf="phoneRef.invalid && phoneTouched" class="error">
-        Invalid phone number
-      </div>
+          <input
+            type="tel"
+            name="phone"
+            [(ngModel)]="user.phone"
+            required
+            #phoneRef="ngModel"
+            [class.invalid]="(phoneRef.invalid || !isValidPhone(getFullPhoneNumber())) && phoneTouched"
+            (blur)="phoneTouched = true"
+            placeholder="Mobile number"
+          />
+        </div>
       
+        <div *ngIf="(phoneRef.invalid || !isValidPhone(getFullPhoneNumber())) && phoneTouched" class="error">
+          Invalid phone number
+        </div>
       </ng-template>
+      
+      
         <!-- Terms -->
          
         <label class="terms-checkbox">
@@ -67,12 +84,21 @@
             name="smsConsent"
             [(ngModel)]="user.smsConsent"
             required />
-          By clicking "Create Account", you agree to
-          <a href="#" target="_blank">Terms of Service</a> and
-          <a href="#" target="_blank">Privacy Policy</a>
+          I agree to receive account-related and marketing messages via SMS.
+          Standard rates may apply. By continuing, I accept the 
+          <a href="/terms" target="_blank">Terms of Service</a> and 
+          <a href="/privacy" target="_blank">Privacy Policy</a>.
         </label>
-        <button type="button" class="nextButton" (click)="nextStepWithSpinner()">Next</button>
-      </div>
+        
+        
+        <button 
+        type="button" 
+        class="nextButton" 
+        (click)="nextStepWithSpinner()" 
+        [disabled]="!isStep1Valid()">
+        Next
+      </button>
+          </div>
     
       <!-- Step 2 -->
       <div class="stepDev" *ngIf="step === 2">

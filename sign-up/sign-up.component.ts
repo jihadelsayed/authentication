@@ -3,6 +3,7 @@ import { NgForm, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 @Component({
   selector: 'app-sign-up',
@@ -16,11 +17,21 @@ import { UserService } from '../services/user.service';
   ]
 })
 export class SignUpComponent implements OnInit {
+  countries = [
+    { code: 'US', dialCode: '1', flag: '🇺🇸' },
+    { code: 'AE', dialCode: '971', flag: '🇦🇪' },
+    { code: 'SY', dialCode: '963', flag: '🇸🇾' },
+    { code: 'GB', dialCode: '44', flag: '🇬🇧' },
+    // ... add more if needed
+  ];
+  selectedCountry: string = 'US';
+
+  
   user: any = {
     first_name: '',
     username: '',
     email: '',
-    phone: '',
+    phone: null,
     password1: '',
     password2: '',
     smsConsent: false,
@@ -45,6 +56,7 @@ export class SignUpComponent implements OnInit {
 
   ngOnInit(): void {
     this.resetForm();
+
     this.route.queryParams.subscribe((params: any) => {
       this.host = params['host'] ?? null;
       this.port = params['port'] ?? '443';
@@ -149,5 +161,30 @@ export class SignUpComponent implements OnInit {
       }
     );
   }
+  isStep1Valid(): boolean {
+    if (this.useEmail) {
+      return !!this.user.email && this.isValidEmail(this.user.email);
+    } else {
+      return !!this.user.phone && this.isValidPhone(this.user.phone) && this.user.smsConsent;
+    }
+  }
   
+  isValidEmail(email: string): boolean {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  }
+  // phone validation 
+  isValidPhone(phone: string): boolean {
+    try {
+      const parsed = parsePhoneNumberFromString(phone, 'US');
+      return parsed?.isValid() ?? false;
+    } catch {
+      return false;
+    }
+  }
+  getFullPhoneNumber(): string {
+    const country = this.countries.find(c => c.code === this.selectedCountry);
+    if (!country || !this.user.phone) return '';
+    return `+${country.dialCode}${this.user.phone.replace(/\D/g, '')}`;
+  }
 }
