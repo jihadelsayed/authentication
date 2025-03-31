@@ -10,16 +10,14 @@
 }
 
 .signup-layout {
-
   max-width: 853px;
   width: 100%;
   min-height: 70vh;
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  p{
+  p {
     overflow-y: hidden;
-
   }
   .signup-top {
     display: flex;
@@ -49,7 +47,6 @@
     }
 
     h2 {
-      
       font-size: 2.2rem;
       font-weight: bold;
       margin-bottom: 1rem;
@@ -213,7 +210,9 @@
     }
   }
 
-  .submit-btn, .nextButton, .backButton {
+  .submit-btn,
+  .nextButton,
+  .backButton {
     width: 100%;
     padding: 0.85rem;
     background-color: $tertiary-color;
@@ -226,8 +225,8 @@
     transition: background 0.3s;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
     color: white;
-    span{
-      color:white;
+    span {
+      color: white;
     }
     &:hover {
       background-color: color.adjust($tertiary-color, $lightness: -5%);
@@ -249,7 +248,7 @@
     position: relative;
     font-weight: 500;
     letter-spacing: 0.5px;
-    
+
     &::before,
     &::after {
       content: "";
@@ -314,7 +313,7 @@ button {
   transition: all 0.2s ease-in-out;
 }
 input:focus {
-  box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.2)!important; // brand orange soft glow
+  box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.2) !important; // brand orange soft glow
 }
 .form-footer {
   display: flex;
@@ -346,9 +345,8 @@ input:focus {
 @media (max-width: 768px) {
   .signup-top {
     margin: 0rem;
-    flex-direction: column!important;
+    flex-direction: column !important;
     padding: 0rem;
-
   }
 
   .signup-container {
@@ -361,9 +359,8 @@ input:focus {
         margin-left: 0;
         margin-top: 0.5rem;
       }
-      button{
+      button {
         border-radius: 999px;
-
       }
     }
 
@@ -387,7 +384,6 @@ input:focus {
   width: 40px;
   height: 40px;
 }
-
 
 // progress bar
 .progress-bar-wrapper {
@@ -417,7 +413,7 @@ input:focus {
   color: #555;
 }
 
-// phone 
+// phone
 .phone-group {
   display: flex;
   gap: 0.5rem;
@@ -467,10 +463,18 @@ input[name="verificationCode"] {
       transition: width 0.3s ease-in-out;
     }
 
-    .weak { background: #e53935; }
-    .moderate { background: #fb8c00; }
-    .strong { background: #43a047; }
-    .very-strong { background: #1e88e5; }
+    .weak {
+      background: #e53935;
+    }
+    .moderate {
+      background: #fb8c00;
+    }
+    .strong {
+      background: #43a047;
+    }
+    .very-strong {
+      background: #1e88e5;
+    }
   }
 
   .strength-label {

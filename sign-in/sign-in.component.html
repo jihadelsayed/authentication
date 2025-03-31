@@ -1,54 +1,189 @@
-<form #loginForm="ngForm" (ngSubmit)="OnSubmit(email.value, password.value)" (keydown.enter)="OnSubmit(email.value, password.value)" class="login-form">
-  <div class="logo-container">
-    <img src="https://i.imgur.com/3fLGfPn.png" class="logo" alt="Logo">
+<div class="body-signin">
+  <div class="signin-layout">
+    <div class="signin-top">
+      <!-- Left Panel -->
+      <div class="left-panel">
+        <img src="https://i.imgur.com/3fLGfPn.png" alt="Neetechs Logo" />
+        <h2 class="step-indicator">Welcome Back to Neetechs</h2>
+        <p class="login-link">
+          Don't have an account? <a routerLink="/signup">Sign Up</a>
+        </p>
+
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="loginStep * 50"></div>
+          </div>
+          <p class="progress-text">Step {{ loginStep }} of 2</p>
+        </div>
+      </div>
+
+      <!-- Right Panel (Form) -->
+      <div class="right-panel signin-container">
+        <ng-container *ngIf="!loginLoading; else loginSpinner">
+          <form #loginForm="ngForm" (ngSubmit)="onLoginSubmit(loginForm)">
+            <!-- Step 1: Email or Phone -->
+            <div class="stepDev" *ngIf="loginStep === 1">
+              <p class="toggle-note">
+                Log in using your email or mobile number.
+              </p>
+
+              <div class="toggle-group">
+                <button
+                  type="button"
+                  [class.active]="!loginUseEmail"
+                  (click)="loginUseEmail = false"
+                >
+                  Mobile Number
+                </button>
+                <button
+                  type="button"
+                  [class.active]="loginUseEmail"
+                  (click)="loginUseEmail = true"
+                >
+                  Email
+                </button>
+              </div>
+
+              <div *ngIf="loginUseEmail; else loginPhoneBlock">
+                <input
+                  type="email"
+                  name="loginEmail"
+                  [(ngModel)]="loginUser.email"
+                  placeholder="Email"
+                  required
+                  autocomplete="email"
+                  #loginEmailRef="ngModel"
+                  [class.invalid]="
+                    loginEmailRef.invalid && loginEmailRef.touched
+                  "
+                />
+                <div
+                  *ngIf="loginEmailRef.invalid && loginEmailRef.touched"
+                  class="error"
+                >
+                  Invalid email address
+                </div>
+              </div>
+
+              <ng-template #loginPhoneBlock>
+                <div class="phone-group">
+                  <select
+                    [(ngModel)]="selectedCountry"
+                    name="loginCountry"
+                    required
+                  >
+                    <option
+                      *ngFor="let c of phoneService.countries"
+                      [value]="c.code"
+                    >
+                      {{ c.flag }} +{{ c.dialCode }}
+                    </option>
+                  </select>
+
+                  <input
+                    type="tel"
+                    name="loginPhone"
+                    [(ngModel)]="loginUser.phone"
+                    required
+                    #loginPhoneRef="ngModel"
+                    [class.invalid]="
+                      (loginPhoneRef.invalid ||
+                        !isValidPhone(
+                          phoneService.getFullPhoneNumber(
+                            this.selectedCountry,
+                            this.loginUser.phone
+                          )
+                        )) &&
+                      phoneTouched
+                    "
+                    (blur)="phoneTouched = true"
+                    placeholder="Mobile number"
+                  />
+                </div>
+
+                <div
+                  *ngIf="
+                    (loginPhoneRef.invalid ||
+                      !isValidPhone(
+                        phoneService.getFullPhoneNumber(
+                          this.selectedCountry,
+                          this.loginUser.phone
+                        )
+                      )) &&
+                    phoneTouched
+                  "
+                  class="error"
+                >
+                  Invalid phone number
+                </div>
+              </ng-template>
+
+              <button
+                type="button"
+                class="nextButton"
+                (click)="nextLoginStep()"
+                [disabled]="!isLoginStep1Valid()"
+              >
+                Next
+              </button>
+            </div>
+
+            <!-- Step 2: Password -->
+            <div class="stepDev" *ngIf="loginStep === 2">
+              <div class="password-group">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  name="loginPassword"
+                  [(ngModel)]="loginUser.password"
+                  placeholder="Password"
+                  required
+                  autocomplete="current-password"
+                />
+                <button
+                  type="button"
+                  (click)="showPassword = !showPassword"
+                  class="toggle-eye"
+                >
+                  👁
+                </button>
+              </div>
+              <div *ngIf="loginError" class="error">{{ loginError }}</div>
+              <button type="button" class="backButton" (click)="loginStep = 1">
+                Back
+              </button>
+              <button type="submit" class="submit-btn">
+                <span *ngIf="!loginLoading">Login</span>
+                <span *ngIf="loginLoading">⏳ Logging in...</span>
+              </button>
+            </div>
+          </form>
+        </ng-container>
+
+        <ng-template #loginSpinner>
+          <div class="step-spinner">
+            <img src="https://i.imgur.com/llF5iyg.gif" alt="Loading..." />
+          </div>
+        </ng-template>
+
+        <div class="divider">Or continue with</div>
+        <div class="oauth-buttons">
+          <button type="button" class="oauth google">Google</button>
+          <button type="button" class="oauth apple">Apple</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="form-footer">
+      <select [(ngModel)]="language">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
+      <div>
+        <a href="https://neetechs.com/en/terms-of-service">Terms</a>
+        <a href="https://neetechs.com/en/privacy-policy">Privacy</a>
+        <a href="https://neetechs.com/en/customer-support">Help</a>
+      </div>
+    </footer>
   </div>
-
-  <h1 class="login-title">Hello Again!</h1>
-  <p class="login-subtitle">Sign in</p>
-
-  <!-- Email Input -->
-  <div class="input-group">
-    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
-    </svg>
-    <input type="email"
-           name="email"
-           id="email"
-           required
-           placeholder="Email Address"
-           [(ngModel)]="email.value"
-           #email="ngModel" />
-  </div>
-
-  <!-- Password Input -->
-  <div class="input-group">
-    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd"
-            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-            clip-rule="evenodd"/>
-    </svg>
-    <input [type]="hide ? 'password' : 'text'"
-           name="password"
-           id="password"
-           required
-           placeholder="Password"
-           [(ngModel)]="password.value"
-           #password="ngModel" />
-  </div>
-
-  <!-- Login Error Message -->
-  <div *ngIf="isLoginError" class="login-error">
-    <span><i class="material-icons">error</i></span>
-    <p>{{ loginErrorMessage }}</p>
-  </div>
-
-  <!-- Submit Button -->
-  <button [disabled]="!loginForm.valid" type="submit" class="submit-btn">Login</button>
-
-  <!-- Footer Links -->
-  <div class="login-footer">
-    <a routerLink="/resetPassword">Forgot Password?</a>
-    <a routerLink="/signup">Don't have an account yet?</a>
-  </div>
-</form>
+</div>
