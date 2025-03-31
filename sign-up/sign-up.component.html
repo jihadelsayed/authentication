@@ -100,6 +100,30 @@
       </button>
           </div>
     
+          <!-- Step 1.5 - Phone Verification -->
+<div class="stepDev" *ngIf="step === 1.5">
+  <p class="verification-note">
+    We've sent a 6-digit code to {{ getFullPhoneNumber() }}. Please enter it below to verify your number.
+  </p>
+
+  <input
+    type="text"
+    maxlength="6"
+    [(ngModel)]="phoneVerificationCode"
+    name="verificationCode"
+    placeholder="Enter verification code"
+    required
+    autocomplete="one-time-code"
+  />
+
+  <div *ngIf="phoneVerificationError" class="error">
+    {{ phoneVerificationError }}
+  </div>
+
+  <button type="button" class="backButton" (click)="step = 1">Back</button>
+  <button type="button" class="nextButton" (click)="verifyCode()">Verify & Continue</button>
+</div>
+
       <!-- Step 2 -->
       <div class="stepDev" *ngIf="step === 2">
         <input type="text" name="first_name" [(ngModel)]="user.first_name" placeholder="First Name" required />
@@ -142,7 +166,17 @@
     autocomplete="new-password" />
   <button type="button" (click)="showPassword = !showPassword" class="toggle-eye">👁</button>
 </div>
+<!-- Password Strength Meter -->
+<div class="password-strength">
+  <div class="strength-bar">
+    <div [ngClass]="strengthClass" [style.width.%]="passwordStrength.percent"></div>
+  </div>
+  <p class="strength-label">{{ passwordStrength.label }}</p>
+</div>
 
+<div *ngIf="passwordMismatch" class="error">
+  Passwords do not match.
+</div>
 
 
 

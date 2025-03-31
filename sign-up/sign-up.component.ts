@@ -25,8 +25,13 @@ export class SignUpComponent implements OnInit {
     // ... add more if needed
   ];
   selectedCountry: string = 'US';
+  passwordMismatch: boolean = false;
 
-  
+  passwordStrength = {
+    percent: 0,
+    label: '',
+  };
+  strengthClass: string = '';
   user: any = {
     first_name: '',
     username: '',
@@ -34,8 +39,8 @@ export class SignUpComponent implements OnInit {
     phone: null,
     password1: '',
     password2: '',
-    smsConsent: false,
-    account_type: ''
+    smsConsent: false//,
+    //account_type: ''
   };
   phoneTouched: boolean = false;
 
@@ -56,7 +61,12 @@ export class SignUpComponent implements OnInit {
 
   ngOnInit(): void {
     this.resetForm();
-
+  // Watch password changes
+      setInterval(() => {
+        if (this.user?.password1 != null) {
+          this.evaluatePasswordStrength(this.user.password1);
+        }
+      }, 200);
     this.route.queryParams.subscribe((params: any) => {
       this.host = params['host'] ?? null;
       this.port = params['port'] ?? '443';
@@ -75,8 +85,8 @@ export class SignUpComponent implements OnInit {
       phone: '',
       password1: '',
       password2: '',
-      smsConsent: false,
-      account_type: ''
+    smsConsent: false  // ,
+      // account_type: ''
     };
   
     this.useEmail = false;
@@ -97,11 +107,18 @@ export class SignUpComponent implements OnInit {
 
   nextStepWithSpinner() {
     this.stepLoading = true;
+  
     setTimeout(() => {
-      this.step++;
+      if (this.step === 1 && !this.useEmail) {
+        this.sendVerificationCode(); // Trigger phone verification
+      } else {
+        this.step++;
+      }
+  
       this.stepLoading = false;
-    }, 400); // 400ms fake delay for spinner
+    }, 400);
   }
+  
   
   prevStepWithSpinner() {
     this.stepLoading = true;
@@ -112,13 +129,26 @@ export class SignUpComponent implements OnInit {
   }
   
   OnSubmit(form: NgForm) {
-    if (this.user.password1 !== this.user.password2) {
-      // Show a toast or inline error if needed
-      console.error('Passwords do not match.');
+    this.passwordMismatch = this.user.password1 !== this.user.password2;
+
+    if (this.passwordMismatch) {
       return;
     }
+    if (this.passwordStrength.percent < 50) {
+      console.error('Password too weak.');
+      this.passwordStrength.label = 'Password too weak (must be at least Moderate)';
+      this.strengthClass = 'weak';
+      return;
+    }
+    // if (!this.user.smsConsent || !this.user.account_type) {
+    //   console.error('Missing required fields.');
+    //   return;
+    // }
   
-    if (!this.user.smsConsent || !this.user.account_type) {
+    this.loading = true;
+
+ 
+    if (!this.user.smsConsent ) {
       console.error('Missing required fields.');
       return;
     }
@@ -187,4 +217,59 @@ export class SignUpComponent implements OnInit {
     if (!country || !this.user.phone) return '';
     return `+${country.dialCode}${this.user.phone.replace(/\D/g, '')}`;
   }
+
+  phoneVerificationCode: string = '';
+phoneVerificationError: string = '';
+generatedCode: string = '';
+
+sendVerificationCode() {
+  this.generatedCode = Math.floor(100000 + Math.random() * 900000).toString(); // simple 6-digit code
+
+  const fullPhone = this.getFullPhoneNumber();
+
+  // Replace with real SMS API call
+  console.log(`Send SMS to ${fullPhone}: Your Neetechs code is ${this.generatedCode}`);
+
+  this.step = 1.5; // move to verification step
+
+//   POST /api/send-verification/
+// {
+//   phone: "+11234567890"
+// }
+
+}
+
+verifyCode() {
+  if (this.phoneVerificationCode === this.generatedCode) {
+    this.step = 2;
+    this.phoneVerificationError = '';
+  } else {
+    this.phoneVerificationError = 'Invalid verification code. Please try again.';
+  }
+}
+evaluatePasswordStrength(password: string) {
+  if (!password) {
+    this.passwordStrength = { percent: 0, label: '' };
+    this.strengthClass = '';
+    return;
+  }
+
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  const strengthMap = [
+    { percent: 25, label: 'Weak', class: 'weak' },
+    { percent: 50, label: 'Moderate', class: 'moderate' },
+    { percent: 75, label: 'Strong', class: 'strong' },
+    { percent: 100, label: 'Very Strong', class: 'very-strong' },
+  ];
+
+  const result = strengthMap[score - 1] || strengthMap[0];
+  this.passwordStrength = { percent: result.percent, label: result.label };
+  this.strengthClass = result.class;
+}
+
 }

@@ -435,3 +435,46 @@ input:focus {
     flex: 1;
   }
 }
+.verification-note {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+input[name="verificationCode"] {
+  letter-spacing: 0.3rem;
+  text-align: center;
+}
+.error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+.password-strength {
+  margin-top: -0.5rem;
+
+  .strength-bar {
+    height: 6px;
+    width: 100%;
+    background: #e0e0e0;
+    border-radius: 50px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+
+    div {
+      height: 100%;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .weak { background: #e53935; }
+    .moderate { background: #fb8c00; }
+    .strong { background: #43a047; }
+    .very-strong { background: #1e88e5; }
+  }
+
+  .strength-label {
+    font-size: 0.85rem;
+    color: #666;
+  }
+}
