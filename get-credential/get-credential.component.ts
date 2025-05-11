@@ -11,50 +11,82 @@ export class GetCredentialComponent implements OnInit {
   host!: string;
   language!: string;
   pathname!: string;
+
+  userToken: string | null = null;
+  userInfo: string | null = null;
+
+  mainDomain = '';
+  frontEndUrl = '';
+  serverUrl = '';
+  serverUrlWithoutSlash = '';
+  chatUrl = '';
+  loginUrl = '';
+
   constructor(
     private route: ActivatedRoute,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
-userToken: string | null = null;
-userInfo: string | null = null;
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      let hostname = window.location.hostname;
+      let origin = window.location.origin;
+      let lang = window.navigator.language?.substring(0, 2) || 'en';
 
-ngOnInit() {
-  if (!isPlatformBrowser(this.platformId)) return;
+      // ✅ Force production values when running on localhost
+      if (hostname.includes('localhost')) {
+        hostname = 'neetechs.com';
+        origin = 'https://neetechs.com';
+      }
 
-  this.userToken = localStorage.getItem("userToken");
-  this.userInfo = localStorage.getItem("UserInfo");
-
-  this.route.queryParams.subscribe((params) => {
-    this.host = params["host"];
-    this.language = params["language"];
-    this.pathname = params["pathname"];
-
-    console.log("GET CREDENTIAL PARAMS:", { host: this.host, language: this.language, pathname: this.pathname });
-
-    if (this.userToken && this.host) {
-      // ✅ Set cookies
-      document.cookie = `userToken=${this.userToken}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
-      document.cookie = `UserInfo=${this.userInfo}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
-
-      // ✅ Send credential back to parent
-      window.top?.postMessage(
-        {
-          type: "credential",
-          getToken: this.userToken,
-          getUserInfo: this.userInfo,
-        },
-        this.host
-      );
-    } else if (this.host) {
-      // ❌ No userToken → notify parent to show login modal
-      window.top?.postMessage(
-        {
-          type: "login_required"
-        },
-        this.host
-      );
+      this.mainDomain = hostname;
+      this.frontEndUrl = origin;
+      this.language = lang;
+      this.serverUrl = `https://api.${hostname}/`;
+      this.serverUrlWithoutSlash = this.serverUrl.slice(0, -1);
+      this.chatUrl = `wss://api.${hostname}/ws/chat/`;
+      this.loginUrl = `https://accounts.neetechs.com/${lang}/getCredential`;
     }
-  });
-}
+  }
 
+  ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.userToken = localStorage.getItem("userToken");
+    this.userInfo = localStorage.getItem("UserInfo");
+
+    this.route.queryParams.subscribe((params) => {
+      this.host = params["host"];
+      this.language = params["language"];
+      this.pathname = params["pathname"];
+
+      console.log("GET CREDENTIAL PARAMS:", {
+        host: this.host,
+        language: this.language,
+        pathname: this.pathname
+      });
+
+      if (this.userToken && this.host) {
+        // ✅ Set cookies for shared domain
+        document.cookie = `userToken=${this.userToken}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
+        document.cookie = `UserInfo=${this.userInfo}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
+
+        // ✅ Notify parent with credentials
+        window.top?.postMessage(
+          {
+            type: "credential",
+            getToken: this.userToken,
+            getUserInfo: this.userInfo,
+          },
+          this.host
+        );
+      } else if (this.host) {
+        // ❌ Notify parent login is needed
+        window.top?.postMessage(
+          {
+            type: "login_required"
+          },
+          this.host
+        );
+      }
+    });
+  }
 }
