@@ -26,20 +26,22 @@ export class GetCredentialComponent implements OnInit {
         this.pathname = params["pathname"];
         if (localStorage.getItem("userToken") != null) {
           if (this.host != undefined) {
-            const topWindow: any = window.top;
+            // ✅ Set cookies for all subdomains before messaging
+            document.cookie = `userToken=${localStorage.getItem("userToken")}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
+            document.cookie = `UserInfo=${localStorage.getItem("UserInfo")}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
 
+            const topWindow: any = window.top;
             topWindow.postMessage(
               {
                 type: "credential",
                 getToken: localStorage.getItem("userToken"),
                 getUserInfo: localStorage.getItem("UserInfo"),
-              }, // get it from url
+              },
               this.host
             );
-            // i will send it to verify token page in the other domain
-          } else {
           }
         }
+
 
         //console.log(this.route.queryParams)
       });
