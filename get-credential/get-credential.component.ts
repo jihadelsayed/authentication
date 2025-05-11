@@ -15,36 +15,46 @@ export class GetCredentialComponent implements OnInit {
     private route: ActivatedRoute,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
-  userToken: any = null;
-  ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.route.queryParams.subscribe((params) => {
-        console.log(params); // { order: "popular" }
+userToken: string | null = null;
+userInfo: string | null = null;
 
-        this.host = params["host"];
-        this.language = params["language"];
-        this.pathname = params["pathname"];
-        if (localStorage.getItem("userToken") != null) {
-          if (this.host != undefined) {
-            // ✅ Set cookies for all subdomains before messaging
-            document.cookie = `userToken=${localStorage.getItem("userToken")}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
-            document.cookie = `UserInfo=${localStorage.getItem("UserInfo")}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
+ngOnInit() {
+  if (!isPlatformBrowser(this.platformId)) return;
 
-            const topWindow: any = window.top;
-            topWindow.postMessage(
-              {
-                type: "credential",
-                getToken: localStorage.getItem("userToken"),
-                getUserInfo: localStorage.getItem("UserInfo"),
-              },
-              this.host
-            );
-          }
-        }
+  this.userToken = localStorage.getItem("userToken");
+  this.userInfo = localStorage.getItem("UserInfo");
 
+  this.route.queryParams.subscribe((params) => {
+    this.host = params["host"];
+    this.language = params["language"];
+    this.pathname = params["pathname"];
 
-        //console.log(this.route.queryParams)
-      });
+    console.log("GET CREDENTIAL PARAMS:", { host: this.host, language: this.language, pathname: this.pathname });
+
+    if (this.userToken && this.host) {
+      // ✅ Set cookies
+      document.cookie = `userToken=${this.userToken}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
+      document.cookie = `UserInfo=${this.userInfo}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
+
+      // ✅ Send credential back to parent
+      window.top?.postMessage(
+        {
+          type: "credential",
+          getToken: this.userToken,
+          getUserInfo: this.userInfo,
+        },
+        this.host
+      );
+    } else if (this.host) {
+      // ❌ No userToken → notify parent to show login modal
+      window.top?.postMessage(
+        {
+          type: "login_required"
+        },
+        this.host
+      );
     }
-  }
+  });
+}
+
 }
