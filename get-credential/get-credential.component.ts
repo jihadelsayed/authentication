@@ -11,10 +11,8 @@ export class GetCredentialComponent implements OnInit {
   host!: string;
   language!: string;
   pathname!: string;
-
   userToken: string | null = null;
   userInfo: string | null = null;
-
   mainDomain = '';
   frontEndUrl = '';
   serverUrl = '';
@@ -31,7 +29,6 @@ export class GetCredentialComponent implements OnInit {
       let origin = window.location.origin;
       let lang = window.navigator.language?.substring(0, 2) || 'en';
 
-      // ✅ Force production values when running on localhost
       if (hostname.includes('localhost')) {
         hostname = 'neetechs.com';
         origin = 'https://neetechs.com';
@@ -47,7 +44,7 @@ export class GetCredentialComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.userToken = localStorage.getItem("userToken");
@@ -61,15 +58,13 @@ export class GetCredentialComponent implements OnInit {
       console.log("GET CREDENTIAL PARAMS:", {
         host: this.host,
         language: this.language,
-        pathname: this.pathname
+        pathname: this.pathname,
       });
 
       if (this.userToken && this.host) {
-        // ✅ Set cookies for shared domain
         document.cookie = `userToken=${this.userToken}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
         document.cookie = `UserInfo=${this.userInfo}; domain=.neetechs.com; path=/; Secure; SameSite=None`;
 
-        // ✅ Notify parent with credentials
         window.top?.postMessage(
           {
             type: "credential",
@@ -79,10 +74,9 @@ export class GetCredentialComponent implements OnInit {
           this.host
         );
       } else if (this.host) {
-        // ❌ Notify parent login is needed
         window.top?.postMessage(
           {
-            type: "login_required"
+            type: "login_required",
           },
           this.host
         );
