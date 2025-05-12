@@ -11,8 +11,9 @@ export class UserService {
   User: any;
   constructor(private http: HttpClient, private config: RuntimeConfigService) {}
 registerUser(user: any) {
+
   const body: any = {
-    name: user.first_name || user.name,
+    name: user.name || user.name,
     password: user.password1,
   };
 
@@ -23,7 +24,7 @@ registerUser(user: any) {
   if (user.phone) {
     body.phone = user.phone;
   }
-
+  console.log(body)
   return this.http.post(this.config.serverUrl + "auth/register/", body);
 }
 userAuthentication(payload: { identifier: string; password: string }) {

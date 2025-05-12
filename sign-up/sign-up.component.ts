@@ -89,7 +89,7 @@ export class SignUpComponent implements OnInit {
     if (form) form.reset();
 
     this.user = {
-      first_name: "",
+      name: "",
       username: "",
       email: "",
       phone: "",
@@ -195,7 +195,7 @@ export class SignUpComponent implements OnInit {
         let msg: any = "Unknown error";
         if (error.status === 400) {
           if (error.error["email"]) msg = error.error["email"];
-          if (error.error["first_name"]) msg = error.error["first_name"];
+          if (error.error["name"]) msg = error.error["name"];
           if (error.error["password1"]) msg = error.error["password1"];
           if (error.error["password2"]) msg = error.error["password2"];
           if (error.error["non_field_errors"]) {
