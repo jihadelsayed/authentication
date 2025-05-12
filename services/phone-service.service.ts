@@ -42,36 +42,47 @@ export class PhoneService {
   //   return this.http.post("/api/send-verification/", { phone });
   // }
 
-  sendVerificationCode(
-    selectedCountry: string,
-    phone: string,
-    onSuccess: () => void
-  ) {
-    const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
-    const headers = new HttpHeaders({
-      "X-Device-ID": this.deviceIdService.getOrGenerateDeviceId(),
+sendVerificationCode(selectedCountry: string, phone: string, onSuccess: () => void) {
+  // Instead of generating mock OTP here, just call your backend
+  const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
+  fetch('https://api.neetechs.com/auth/otp/send/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Device-ID': localStorage.getItem('device_id') || '', // optional
+    },
+    body: JSON.stringify({ phone: fullPhone }),
+  })
+    .then(res => res.json())
+    .then(() => onSuccess())
+    .catch(err => console.error("Failed to send OTP:", err));
+}
+
+verifyCode(selectedCountry: string, phone: string, otp: string, onSuccess: () => void) {
+  const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
+  fetch(this.config.serverUrl + 'auth/otp/verify/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Device-ID': localStorage.getItem('device_id') || '',
+    },
+    body: JSON.stringify({ phone: fullPhone, otp }),
+  })
+    .then(res => res.json())
+    .then((res) => {
+      if (res.token) {
+        localStorage.setItem("userToken", res.token);
+        localStorage.setItem("UserInfo", JSON.stringify(res.user));
+        onSuccess();
+      } else {
+        this.phoneVerificationError = res.detail || "Invalid OTP";
+      }
+    })
+    .catch(err => {
+      this.phoneVerificationError = "Verification failed.";
+      console.error(err);
     });
+}
 
-    this.http
-      .post(
-        this.config.serverUrl + "auth/otp/send/",
-        { phone: fullPhone },
-        { headers }
-      )
-      .subscribe({
-        next: () => onSuccess(),
-        error: (err) => console.error("OTP send failed", err),
-      });
-  }
 
-  verifyCode(onSuccess: () => void) {
-    if (this.phoneVerificationCode === this.generatedCode) {
-      onSuccess();
-
-      this.phoneVerificationError = "";
-    } else {
-      this.phoneVerificationError =
-        "Invalid verification code. Please try again.";
-    }
-  }
 }

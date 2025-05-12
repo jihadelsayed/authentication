@@ -19,7 +19,7 @@ export class SignUpComponent implements OnInit {
   selectedCountry: string = "US";
   passwordMismatch: boolean = false;
 
-  passwordStrength = { percent: 0, label: '', strengthClass: '' };
+  passwordStrength = { percent: 0, label: "", strengthClass: "" };
 
   strengthClass: string = "";
   user: any = {
@@ -48,7 +48,7 @@ export class SignUpComponent implements OnInit {
     private route: ActivatedRoute,
     public phoneService: PhoneService,
     public passwordService: PasswordService,
-  private deviceIdService: DeviceIdService
+    private deviceIdService: DeviceIdService
   ) {}
   private intervalId: any;
 
@@ -61,7 +61,6 @@ export class SignUpComponent implements OnInit {
     //     this.evaluatePasswordStrength(this.user.password1);
     //   }
     // }, 1000);
-  
 
     this.route.queryParams.subscribe((params: any) => {
       this.host = params["host"] ?? null;
@@ -69,8 +68,6 @@ export class SignUpComponent implements OnInit {
       this.pathname = params["pathname"] ?? "";
       this.language = params["language"] ?? "en";
     });
-
- 
   }
   ngOnDestroy(): void {
     if (this.intervalId) {
@@ -78,9 +75,14 @@ export class SignUpComponent implements OnInit {
     }
   }
   verifyCode() {
-    this.phoneService.verifyCode(() => {
-      this.step = 2;
-    });
+    this.phoneService.verifyCode(
+      this.selectedCountry,
+      this.user.phone,
+      this.phoneService.phoneVerificationCode,
+      () => {
+        this.step = 2;
+      }
+    );
   }
 
   resetForm(form?: NgForm) {
@@ -118,9 +120,13 @@ export class SignUpComponent implements OnInit {
 
     setTimeout(() => {
       if (this.step === 1 && !this.useEmail) {
-        this.phoneService.sendVerificationCode(this.selectedCountry, this.user.phone, () => {
-          this.step = 1.5;
-        });
+        this.phoneService.sendVerificationCode(
+          this.selectedCountry,
+          this.user.phone,
+          () => {
+            this.step = 1.5;
+          }
+        );
       } else {
         this.step++;
       }
@@ -185,7 +191,7 @@ export class SignUpComponent implements OnInit {
       },
       (error) => {
         this.loading = false;
-      
+
         let msg: any = "Unknown error";
         if (error.status === 400) {
           if (error.error["email"]) msg = error.error["email"];
@@ -200,7 +206,6 @@ export class SignUpComponent implements OnInit {
         }
         console.error(`${msg}`); // ensures it's a string
       }
-      
     );
   }
   isStep1Valid(): boolean {
