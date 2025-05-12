@@ -149,13 +149,13 @@ export class SignUpComponent implements OnInit {
     if (this.passwordMismatch) {
       return;
     }
-    if (this.passwordStrength.percent < 50) {
-      console.error("Password too weak.");
-      this.passwordStrength.label =
-        "Password too weak (must be at least Moderate)";
+    if (this.user.password1.length < 6) {
+      console.error("Password too short (minimum 6 characters).");
+      this.passwordStrength.label = "Too short";
       this.strengthClass = "weak";
       return;
     }
+
     // if (!this.user.smsConsent || !this.user.account_type) {
     //   console.error('Missing required fields.');
     //   return;
