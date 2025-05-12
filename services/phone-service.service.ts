@@ -14,14 +14,16 @@ export class PhoneService {
     { code: "SY", dialCode: "963", flag: "🇸🇾" },
     { code: "GB", dialCode: "44", flag: "🇬🇧" },
   ];
+
   phoneVerificationCode: string = "";
   phoneVerificationError: string = "";
   generatedCode: string = "";
+
   constructor(
     private http: HttpClient,
-    private deviceIdService: DeviceIdService,
-    private config: RuntimeConfigService
-  ) {} // ✅
+    private config: RuntimeConfigService,
+    private deviceIdService: DeviceIdService
+  ) {}
 
   isValidPhone(phone: string): boolean {
     try {
@@ -37,52 +39,59 @@ export class PhoneService {
     if (!country || !phone) return "";
     return `+${country.dialCode}${phone.replace(/\D/g, "")}`;
   }
-  // If you want to unify phone verification or other user-related tasks:
-  //  sendVerificationCode(phone: string): Observable<any> {
-  //   return this.http.post("/api/send-verification/", { phone });
-  // }
 
-sendVerificationCode(selectedCountry: string, phone: string, onSuccess: () => void) {
-  // Instead of generating mock OTP here, just call your backend
-  const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
-  fetch('https://api.neetechs.com/auth/otp/send/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Device-ID': localStorage.getItem('device_id') || '', // optional
-    },
-    body: JSON.stringify({ phone: fullPhone }),
-  })
-    .then(res => res.json())
-    .then(() => onSuccess())
-    .catch(err => console.error("Failed to send OTP:", err));
-}
+  sendVerificationCode(
+    selectedCountry: string,
+    phone: string,
+    onSuccess: () => void
+  ): void {
+    const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
+    const url = this.config.serverUrl + "auth/otp/send/";
 
-verifyCode(selectedCountry: string, phone: string, otp: string, onSuccess: () => void) {
-  const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
-  fetch(this.config.serverUrl + 'auth/otp/verify/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Device-ID': localStorage.getItem('device_id') || '',
-    },
-    body: JSON.stringify({ phone: fullPhone, otp }),
-  })
-    .then(res => res.json())
-    .then((res) => {
-      if (res.token) {
-        localStorage.setItem("userToken", res.token);
-        localStorage.setItem("UserInfo", JSON.stringify(res.user));
-        onSuccess();
-      } else {
-        this.phoneVerificationError = res.detail || "Invalid OTP";
-      }
-    })
-    .catch(err => {
-      this.phoneVerificationError = "Verification failed.";
-      console.error(err);
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json",
+      "X-Device-ID": this.deviceIdService.getOrGenerateDeviceId(),
     });
-}
 
+    this.http.post<any>(url, { phone: fullPhone }, { headers }).subscribe({
+      next: () => onSuccess(),
+      error: (err) => {
+        console.error("OTP send failed:", err);
+        this.phoneVerificationError =
+          err?.error?.detail || "Failed to send verification code.";
+      },
+    });
+  }
 
+  verifyCode(
+    selectedCountry: string,
+    phone: string,
+    otp: string,
+    onSuccess: () => void
+  ): void {
+    const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
+    const url = this.config.serverUrl + "auth/otp/verify/";
+
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json",
+      "X-Device-ID": this.deviceIdService.getOrGenerateDeviceId(),
+    });
+
+    this.http.post<any>(url, { phone: fullPhone, otp }, { headers }).subscribe({
+      next: (res) => {
+        if (res.token) {
+          localStorage.setItem("userToken", res.token);
+          localStorage.setItem("UserInfo", JSON.stringify(res.user));
+          onSuccess();
+        } else {
+          this.phoneVerificationError = res.detail || "Invalid OTP";
+        }
+      },
+      error: (err) => {
+        console.error("OTP verification failed:", err);
+        this.phoneVerificationError =
+          err?.error?.detail || "Verification failed.";
+      },
+    });
+  }
 }
