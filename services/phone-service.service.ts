@@ -2,6 +2,8 @@
 import { Injectable } from "@angular/core";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { Observable } from "rxjs/internal/Observable";
+import { DeviceIdService } from "./device-id.service";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 
 @Injectable({ providedIn: "root" })
 export class PhoneService {
@@ -14,6 +16,7 @@ export class PhoneService {
   phoneVerificationCode: string = "";
   phoneVerificationError: string = "";
   generatedCode: string = "";
+constructor( private http: HttpClient,private deviceIdService: DeviceIdService) {} // ✅
 
   isValidPhone(phone: string): boolean {
     try {
@@ -35,18 +38,22 @@ export class PhoneService {
 // }
 
 sendVerificationCode(selectedCountry: string, phone: string, onSuccess: () => void) {
-  //if (!phone) {
- 
-  this.generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-  console.log(`Send SMS to ${this.getFullPhoneNumber(selectedCountry, phone)}: Your Neetechs code is ${this.generatedCode}`);
+  const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
 
-//}
-  onSuccess(); // callback from component
-  //   POST /api/send-verification/
-  // {
-  //   phone: "+11234567890"
-  // }
+  const headers = new HttpHeaders({
+    "X-Device-ID": this.deviceIdService.getOrGenerateDeviceId()
+  });
+
+  this.http.post("/auth/otp/send/", { phone: fullPhone }, { headers }).subscribe({
+    next: () => {
+      onSuccess(); // ⬅️ move to next step on success
+    },
+    error: (err) => {
+      console.error("OTP send failed", err);
+    }
+  });
 }
+
 
  
 

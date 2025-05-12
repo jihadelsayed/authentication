@@ -98,7 +98,11 @@ export class SignInComponent implements OnInit {
 
     this.loginLoading = true;
     this.userService
-      .userAuthentication(loginIdentifier, this.loginUser.password)
+  .userAuthentication({
+    identifier: loginIdentifier,
+    password: this.loginUser.password
+  })
+
       .subscribe(
         (data: any) => {
           localStorage.setItem("userToken", data.token);

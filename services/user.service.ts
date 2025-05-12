@@ -10,25 +10,24 @@ import { RuntimeConfigService } from "../../services/runtime-config.service";
 export class UserService {
   User: any;
   constructor(private http: HttpClient, private config: RuntimeConfigService) {}
+registerUser(user: any) {
+  const body: any = {
+    name: user.first_name || user.name,
+    password: user.password1,
+  };
 
-  registerUser(user: any) {
-    const body: any = {
-      username: user.username,
-      first_name: user.first_name,
-      email: user.email,
-      password1: user.password1,
-      password2: user.password2,
-    };
-    return this.http.post(this.config.serverUrl + "auth/register/", body);
+  if (user.email) {
+    body.email = user.email;
   }
 
-  userAuthentication(email: string, password: string) {
-    const body = {
-      username: " ",
-      email: email,
-      password: password,
-    };
-    return this.http.post(this.config.serverUrl + "auth/login/", body);
+  if (user.phone) {
+    body.phone = user.phone;
+  }
+
+  return this.http.post(this.config.serverUrl + "auth/register/", body);
+}
+userAuthentication(payload: { identifier: string; password: string }) {
+    return this.http.post(this.config.serverUrl + "auth/login/", payload);
   }
  
 

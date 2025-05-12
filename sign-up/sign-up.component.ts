@@ -6,6 +6,7 @@ import { UserService } from "../services/user.service";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { PhoneService } from "../services/phone-service.service";
 import { PasswordService } from "../services/password-service.service";
+import { DeviceIdService } from "../services/device-id.service";
 
 @Component({
   selector: "app-sign-up",
@@ -22,8 +23,7 @@ export class SignUpComponent implements OnInit {
 
   strengthClass: string = "";
   user: any = {
-    first_name: "",
-    username: "",
+    name: "",
     email: "",
     phone: "",
     password1: "",
@@ -47,7 +47,8 @@ export class SignUpComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     public phoneService: PhoneService,
-    public passwordService: PasswordService
+    public passwordService: PasswordService,
+  private deviceIdService: DeviceIdService
   ) {}
   private intervalId: any;
 
