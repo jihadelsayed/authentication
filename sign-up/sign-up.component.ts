@@ -74,16 +74,27 @@ export class SignUpComponent implements OnInit {
       clearInterval(this.intervalId);
     }
   }
-  verifyCode() {
-    this.phoneService.verifyCode(
-      this.selectedCountry,
-      this.user.phone,
-      this.phoneService.phoneVerificationCode,
-      () => {
+verifyCode() {
+  this.phoneService.verifyCode(
+    this.selectedCountry,
+    this.user.phone,
+    this.phoneService.phoneVerificationCode,
+    (hasPassword: boolean) => {
+      if (hasPassword) {
+        // Password already exists → skip to dashboard or redirect
+        const redirectHost = this.host ?? "neetechs.com";
+        const redirectPort = this.port ?? "443";
+        const redirectLang = (this.language ?? "en").slice(0, 2);
+        const redirectPath = this.pathname ?? "";
+        const finalRedirect = `https://${redirectHost}:${redirectPort}/#/${redirectLang}/${redirectPath}`;
+        window.location.href = finalRedirect;
+      } else {
+        // No password yet → go to Step 2
         this.step = 2;
       }
-    );
-  }
+    }
+  );
+}
 
   resetForm(form?: NgForm) {
     if (form) form.reset();
@@ -143,71 +154,33 @@ export class SignUpComponent implements OnInit {
     }, 400);
   }
 
-  OnSubmit(form: NgForm) {
-    this.passwordMismatch = this.user.password1 !== this.user.password2;
+OnSubmit(form: NgForm) {
+  this.passwordMismatch = this.user.password1 !== this.user.password2;
 
-    if (this.passwordMismatch) {
-      return;
-    }
-    if (this.user.password1.length < 6) {
-      console.error("Password too short (minimum 6 characters).");
-      this.passwordStrength.label = "Too short";
-      this.strengthClass = "weak";
-      return;
-    }
-
-    // if (!this.user.smsConsent || !this.user.account_type) {
-    //   console.error('Missing required fields.');
-    //   return;
-    // }
-
-    this.loading = true;
-
-    if (!this.user.smsConsent) {
-      console.error("Missing required fields.");
-      return;
-    }
-
-    this.loading = true;
-
-    this.userService.registerUser(form.value).subscribe(
-      (data: any) => {
-        this.loading = false;
-
-        if (data.Succeeded === true) {
-          localStorage.setItem("UserInfo", JSON.stringify(data.user));
-          localStorage.setItem("userToken", data.token);
-
-          const redirectHost = this.host ?? "neetechs.com";
-          const redirectPort = this.port ?? "443";
-          const redirectLang = (this.language ?? "en").slice(0, 2);
-          const redirectPath = this.pathname ?? "";
-          const finalRedirect = `https://${redirectHost}:${redirectPort}/#/${redirectLang}/${redirectPath}`;
-
-          window.location.href = finalRedirect;
-        } else {
-          console.error("Registration failed:", data);
-        }
-      },
-      (error) => {
-        this.loading = false;
-
-        let msg: any = "Unknown error";
-        if (error.status === 400) {
-          if (error.error["email"]) msg = error.error["email"];
-          if (error.error["name"]) msg = error.error["name"];
-          if (error.error["password1"]) msg = error.error["password1"];
-          if (error.error["password2"]) msg = error.error["password2"];
-          if (error.error["non_field_errors"]) {
-            msg = error.error["non_field_errors"];
-          }
-        } else {
-          msg = error.message || "Unknown error";
-        }
-        console.error(`${msg}`); // ensures it's a string
-      }
-    );
+  if (this.passwordMismatch || this.user.password1.length < 6) {
+    this.passwordStrength.label = "Too short";
+    this.strengthClass = "weak";
+    return;
   }
+
+  this.loading = true;
+
+  this.userService.setPassword(this.user.password1).subscribe({
+    next: () => {
+      const redirectHost = this.host ?? "neetechs.com";
+      const redirectPort = this.port ?? "443";
+      const redirectLang = (this.language ?? "en").slice(0, 2);
+      const redirectPath = this.pathname ?? "";
+      const finalRedirect = `https://${redirectHost}:${redirectPort}/#/${redirectLang}/${redirectPath}`;
+      window.location.href = finalRedirect;
+    },
+    error: (err) => {
+      this.loading = false;
+      console.error("Failed to set password:", err);
+    }
+  });
+}
+
   isStep1Valid(): boolean {
     if (this.useEmail) {
       return !!this.user.email && this.isValidEmail(this.user.email);
@@ -231,4 +204,12 @@ export class SignUpComponent implements OnInit {
     this.passwordStrength.label = result.label;
     this.strengthClass = result.strengthClass;
   }
+    loginWithGoogle() {
+      const url = "https://neetechs.com/auth/google/?process=login";
+      window.location.href = url;
+    }
+    loginWithFacebook() {
+      const url = "https://neetechs.com/auth/facebook/?process=login";
+      window.location.href = url;
+    }
 }

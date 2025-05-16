@@ -14,6 +14,13 @@ import parsePhoneNumberFromString from "libphonenumber-js";
 import { PhoneService } from "../services/phone-service.service";
 import { PasswordService } from "../services/password-service.service";
 
+import {
+  startRegistration,
+  browserSupportsWebAuthn,
+} from "@simplewebauthn/browser";
+import { DeviceIdService } from "../services/device-id.service";
+import { WebAuthnService } from "../services/webauthn.service";
+
 @Component({
   selector: "app-sign-in",
   standalone: true,
@@ -28,6 +35,21 @@ import { PasswordService } from "../services/password-service.service";
   providers: [CookieService],
 })
 export class SignInComponent implements OnInit {
+  resendCooldown = 60;
+  resendTimer: any;
+  canResend = true;
+  startCooldown(seconds: number = 60) {
+    this.canResend = false;
+    this.resendCooldown = seconds;
+    this.resendTimer = setInterval(() => {
+      this.resendCooldown--;
+      if (this.resendCooldown <= 0) {
+        this.canResend = true;
+        clearInterval(this.resendTimer);
+      }
+    }, 1000);
+  }
+
   loginUser: any = {
     email: "",
     phone: "",
@@ -53,7 +75,8 @@ export class SignInComponent implements OnInit {
     private cookie: CookieService,
     @Inject(PLATFORM_ID) private platformId: Object,
     public phoneService: PhoneService,
-    public passwordService: PasswordService
+    public passwordService: PasswordService,
+    private webauthnService: WebAuthnService
   ) {}
 
   ngOnInit(): void {
@@ -98,10 +121,10 @@ export class SignInComponent implements OnInit {
 
     this.loginLoading = true;
     this.userService
-  .userAuthentication({
-    identifier: loginIdentifier,
-    password: this.loginUser.password
-  })
+      .userAuthentication({
+        identifier: loginIdentifier,
+        password: this.loginUser.password,
+      })
 
       .subscribe(
         (data: any) => {
@@ -109,6 +132,8 @@ export class SignInComponent implements OnInit {
           localStorage.setItem("UserInfo", JSON.stringify(data.user));
           this.cookie.set("userToken", data.token);
           this.cookie.set("UserInfo", JSON.stringify(data.user));
+
+          //this.promptToSavePasskey(data.user);
 
           const redirectHost = this.host ?? "neetechs.com";
           const redirectPort = this.port ?? "443";
@@ -135,6 +160,34 @@ export class SignInComponent implements OnInit {
       );
   }
 
+  // promptToSavePasskey(user: any) {
+  //   if (!browserSupportsWebAuthn()) return;
+
+  //   const confirmSave = window.confirm("Do you want to enable passkey login for faster access?");
+  //   if (!confirmSave) return;
+
+  //     startRegistration({ optionsJSON })
+  //       .then((cred) => {
+  //     // 🔥 Send `cred` to your Django backend to save
+
+  //   }).catch(err => {
+  //     console.error("Passkey registration failed", err);
+  //   });
+  // }
+
+  loginWithBiometric() {
+    const userId = JSON.parse(localStorage.getItem("UserInfo") || "{}").id;
+    this.webauthnService
+      .login(userId)
+      .then((res) => {
+        localStorage.setItem("userToken", res.token);
+        this.router.navigate(["/dashboard"]);
+      })
+      .catch((err) => {
+        console.error("Biometric login failed", err);
+      });
+  }
+
   isValidEmail(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -146,6 +199,40 @@ export class SignInComponent implements OnInit {
     return this.phoneService.getFullPhoneNumber(
       this.selectedCountry,
       this.loginUser.phone
+    );
+  }
+  loginWithGoogle() {
+    const url = "https://neetechs.com/auth/google/?process=login";
+    window.location.href = url;
+  }
+  loginWithFacebook() {
+    const url = "https://neetechs.com/auth/facebook/?process=login";
+    window.location.href = url;
+  }
+  sendLoginOtp() {
+    this.phoneService.sendVerificationCode(
+      this.selectedCountry,
+      this.loginUser.phone,
+      () => {
+        this.loginStep = 1.5; // OTP input screen
+        this.startCooldown();
+      }
+    );
+  }
+
+  verifyLoginOtp() {
+    this.phoneService.verifyCode(
+      this.selectedCountry,
+      this.loginUser.phone,
+      this.phoneService.phoneVerificationCode,
+      (hasPassword) => {
+        const redirectHost = this.host ?? "neetechs.com";
+        const redirectPort = this.port ?? "443";
+        const redirectLang = (this.language ?? "en").slice(0, 2);
+        const redirectPath = this.pathname ?? "";
+        const finalRedirect = `https://${redirectHost}:${redirectPort}/#/${redirectLang}/${redirectPath}`;
+        window.location.href = finalRedirect;
+      }
     );
   }
 }

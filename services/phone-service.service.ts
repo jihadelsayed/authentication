@@ -63,35 +63,36 @@ export class PhoneService {
     });
   }
 
-  verifyCode(
-    selectedCountry: string,
-    phone: string,
-    otp: string,
-    onSuccess: () => void
-  ): void {
-    const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
-    const url = this.config.serverUrl + "auth/otp/verify/";
+verifyCode(
+  selectedCountry: string,
+  phone: string,
+  otp: string,
+  onSuccess: (hasPassword: boolean) => void
+): void {
+  const fullPhone = this.getFullPhoneNumber(selectedCountry, phone);
+  const url = this.config.serverUrl + "auth/otp/verify/";
 
-    const headers = new HttpHeaders({
-      "Content-Type": "application/json",
-      "X-Device-ID": this.deviceIdService.getOrGenerateDeviceId(),
-    });
+  const headers = new HttpHeaders({
+    "Content-Type": "application/json",
+    "X-Device-ID": this.deviceIdService.getOrGenerateDeviceId(),
+  });
 
-    this.http.post<any>(url, { phone: fullPhone, otp }, { headers }).subscribe({
-      next: (res) => {
-        if (res.token) {
-          localStorage.setItem("userToken", res.token);
-          localStorage.setItem("UserInfo", JSON.stringify(res.user));
-          onSuccess();
-        } else {
-          this.phoneVerificationError = res.detail || "Invalid OTP";
-        }
-      },
-      error: (err) => {
-        console.error("OTP verification failed:", err);
-        this.phoneVerificationError =
-          err?.error?.detail || "Verification failed.";
-      },
-    });
-  }
+  this.http.post<any>(url, { phone: fullPhone, otp }, { headers }).subscribe({
+    next: (res) => {
+      if (res.token) {
+        localStorage.setItem("userToken", res.token);
+        localStorage.setItem("UserInfo", JSON.stringify(res.user));
+        onSuccess(res.has_password);
+      } else {
+        this.phoneVerificationError = res.detail || "Invalid OTP";
+      }
+    },
+    error: (err) => {
+      console.error("OTP verification failed:", err);
+      this.phoneVerificationError =
+        err?.error?.detail || "Verification failed.";
+    },
+  });
+}
+
 }
