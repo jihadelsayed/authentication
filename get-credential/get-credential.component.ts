@@ -37,9 +37,9 @@ export class GetCredentialComponent implements OnInit {
       this.mainDomain = hostname;
       this.frontEndUrl = origin;
       this.language = lang;
-      this.serverUrl = `https://api.${hostname}/`;
+      this.serverUrl = `https://server.${hostname}/`;
       this.serverUrlWithoutSlash = this.serverUrl.slice(0, -1);
-      this.chatUrl = `wss://api.${hostname}/ws/chat/`;
+      this.chatUrl = `wss://server.${hostname}/ws/chat/`;
       this.loginUrl = `https://accounts.neetechs.com/${lang}/getCredential`;
     }
   }
