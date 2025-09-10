@@ -80,7 +80,7 @@ export class SignInComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.subscribe((params:any) => {
       this.host = params["host"] ?? null;
       this.port = params["port"] ?? "443";
       this.pathname = params["pathname"] ?? "";
@@ -109,56 +109,65 @@ export class SignInComponent implements OnInit {
     }
   }
 
-  onLoginSubmit(form: NgForm): void {
-    if (!form.valid) return;
+onLoginSubmit(form: NgForm): void {
+  if (!form.valid) return;
 
-    const loginIdentifier = this.loginUseEmail
-      ? this.loginUser.email
-      : this.phoneService.getFullPhoneNumber(
-          this.selectedCountry,
-          this.loginUser.phone
-        );
-
-    this.loginLoading = true;
-    this.userService
-      .userAuthentication({
-        identifier: loginIdentifier,
-        password: this.loginUser.password,
-      })
-
-      .subscribe(
-        (data: any) => {
-          localStorage.setItem("userToken", data.token);
-          localStorage.setItem("UserInfo", JSON.stringify(data.user));
-          this.cookie.set("userToken", data.token);
-          this.cookie.set("UserInfo", JSON.stringify(data.user));
-
-          //this.promptToSavePasskey(data.user);
-
-          const redirectHost = this.host ?? "neetechs.com";
-          const redirectPort = this.port ?? "443";
-          const redirectLang = (this.language ?? "en").slice(0, 2);
-          const redirectPath = this.pathname ?? "";
-          const finalRedirect = `https://${redirectHost}:${redirectPort}/#/${redirectLang}/${redirectPath}`;
-
-          window.location.href = finalRedirect;
-          this.loginLoading = false;
-        },
-        (error) => {
-          this.loginLoading = false;
-          let msg: string = "Login failed";
-          if (error.status === 400) {
-            if (error.error["non_field_errors"])
-              msg = error.error["non_field_errors"];
-            if (error.error["email"]) msg = error.error["email"];
-            if (error.error["password"]) msg = error.error["password"];
-          } else {
-            msg = error.message;
-          }
-          this.loginError = msg;
-        }
-      );
+  // figure out which field to send
+  let payload: any;
+  if (this.loginUseEmail) {
+    payload = {
+      email: this.loginUser.email,
+      password: this.loginUser.password,
+    };
+  } else {
+    payload = {
+      phone: this.phoneService.getFullPhoneNumber(
+        this.selectedCountry,
+        this.loginUser.phone
+      ),
+      password: this.loginUser.password,
+    };
   }
+
+  this.loginLoading = true;
+
+  this.userService.userAuthentication(payload).subscribe(
+    (data: any) => {
+      // store user info
+      localStorage.setItem("userToken", data.token);
+      localStorage.setItem("UserInfo", JSON.stringify(data.user));
+      this.cookie.set("userToken", data.token);
+      this.cookie.set("UserInfo", JSON.stringify(data.user));
+
+      // build redirect URL
+      const redirectHost = this.host ?? "neetechs.com";
+      const redirectPort = this.port ?? "443";
+      const redirectLang = (this.language ?? "en").slice(0, 2);
+      const redirectPath = this.pathname ?? "";
+      const finalRedirect = `https://${redirectHost}:${redirectPort}/#/${redirectLang}/${redirectPath}`;
+
+      window.location.href = finalRedirect;
+      this.loginLoading = false;
+    },
+    (error: any) => {
+      this.loginLoading = false;
+      let msg: string = "Login failed";
+
+      if (error.status === 400) {
+        if (error.error["non_field_errors"])
+          msg = error.error["non_field_errors"];
+        else if (error.error["email"]) msg = error.error["email"];
+        else if (error.error["phone"]) msg = error.error["phone"];
+        else if (error.error["password"]) msg = error.error["password"];
+      } else {
+        msg = error.message;
+      }
+
+      this.loginError = msg;
+    }
+  );
+}
+
 
   // promptToSavePasskey(user: any) {
   //   if (!browserSupportsWebAuthn()) return;
